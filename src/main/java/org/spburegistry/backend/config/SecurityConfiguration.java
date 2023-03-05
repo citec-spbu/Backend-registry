@@ -1,7 +1,7 @@
 package org.spburegistry.backend.config;
 
 
-//TODO: modify this class when we start work with autification
+//TODO: modify this class when we start work with security
 
 // import org.springframework.context.annotation.Bean;
 // import org.springframework.context.annotation.Configuration;

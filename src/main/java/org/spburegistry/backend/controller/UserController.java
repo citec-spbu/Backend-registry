@@ -18,13 +18,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/users/user")
-    public ResponseEntity<User> getUser(@RequestParam(required = false) Long id) {
-        try {
-            User user = userService.findById(id);
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public User getUser(@RequestParam() Long id) {
+        return userService.findById(id);
     }
 
     @GetMapping("/users")

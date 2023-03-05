@@ -1,5 +1,6 @@
 package org.spburegistry.backend.service.implementation;
 
+import org.spburegistry.backend.ExceptionHandler.exception.NoSuchUserException;
 import org.spburegistry.backend.entity.User;
 import org.spburegistry.backend.repository.UserRepo;
 import org.spburegistry.backend.service.UserService;
@@ -18,7 +19,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(long id) {
-        return userRepo.findById(id).get();
+        return userRepo.findById(id).orElseThrow(
+            () -> new NoSuchUserException("User with id " + id + " not found"));
     }
 
     @Override
