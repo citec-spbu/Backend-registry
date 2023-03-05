@@ -25,5 +25,10 @@ public class UserServiceImpl implements UserService {
     public User findByName(String name) {
         return userRepo.findByName(name);
     }
+
+    @Override
+    public Iterable<User> findAll() {
+        return userRepo.findAll();
+    }
     
 }

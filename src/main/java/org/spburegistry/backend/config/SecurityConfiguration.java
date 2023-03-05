@@ -1,5 +1,8 @@
 package org.spburegistry.backend.config;
 
+
+//TODO: modify this class when we start work with autification
+
 // import org.springframework.context.annotation.Bean;
 // import org.springframework.context.annotation.Configuration;
 // import org.springframework.security.config.annotation.web.builders.HttpSecurity;
