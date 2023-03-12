@@ -1,31 +1,35 @@
 package org.spburegistry.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
+import lombok.*;
+import org.spburegistry.backend.enums.Role;
 
+@EqualsAndHashCode(callSuper = false)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name="users")
 @Data
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class User extends BaseEntity {
 
-    @Column(name = "name")
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "email")
+    @Nullable
     private String email;
 
+    @Column(nullable = false)
+    private Role role;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
+    @Nullable
+    private Student student;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    @Nullable
+    private Client client;
 }
