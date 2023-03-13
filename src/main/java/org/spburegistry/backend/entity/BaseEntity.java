@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 @MappedSuperclass
@@ -20,10 +20,20 @@ public abstract class BaseEntity implements Serializable {
     private long id;
 
     @UpdateTimestamp
-    @Column(name = "last_update_time", nullable = false)
-    private Timestamp lastUpdateTime;
+    @Column(name = "last_update_time")
+    private Date lastUpdateTime;
 
     @CreationTimestamp
-    @Column(name = "creation_time", nullable = false)
-    private Timestamp creationTime;
+    @Column(name = "creation_time")
+    private Date creationTime;
+
+    @PrePersist
+    protected void onCreate() {
+        lastUpdateTime = creationTime = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastUpdateTime = new Date();
+    }
 }

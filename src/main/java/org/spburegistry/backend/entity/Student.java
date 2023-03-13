@@ -20,9 +20,11 @@ public class Student extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Sex sex;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Degree degree;
 
     @Column(nullable = false)

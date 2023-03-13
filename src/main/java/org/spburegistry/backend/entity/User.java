@@ -21,6 +21,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @OneToOne(cascade = CascadeType.ALL)
