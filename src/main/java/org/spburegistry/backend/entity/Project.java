@@ -3,7 +3,9 @@ package org.spburegistry.backend.entity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+import org.spburegistry.backend.enums.WorkFormat;
 
+import java.util.Date;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = false)
@@ -18,12 +20,11 @@ public class Project extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "text")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "studying_program_id", nullable = false)
-    private EducationalProgram educationalProgram;
+    @Column(columnDefinition = "text")
+    private String requirements;
 
     @Column(name = "repository_link")
     @Nullable
@@ -73,4 +74,22 @@ public class Project extends BaseEntity {
 
     @OneToMany(mappedBy = "project")
     private Set<Commit> commits;
+
+    @OneToMany(mappedBy = "project")
+    private Set<Link> links;
+
+    @OneToMany(mappedBy = "project")
+    private Set<Requirement> requirementsForPerformers;
+
+    @Column(name = "work_format", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private WorkFormat workFormat;
+
+    @Column(name = "start_time")
+    private Date start;
+
+    @Column(name = "end_time")
+    private Date end;
+
+
 }
