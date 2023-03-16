@@ -26,10 +26,6 @@ public class Project extends BaseEntity {
     @Column(columnDefinition = "text")
     private String requirements;
 
-    @Column(name = "repository_link")
-    @Nullable
-    private String repositoryLink;
-
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
@@ -91,5 +87,6 @@ public class Project extends BaseEntity {
     @Column(name = "end_time")
     private Date end;
 
-
+    @Column(name = "max_students")
+    private int maxStudents;
 }

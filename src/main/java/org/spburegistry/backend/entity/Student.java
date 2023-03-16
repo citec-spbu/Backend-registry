@@ -40,6 +40,9 @@ public class Student extends BaseEntity {
     @OneToMany(mappedBy = "student")
     private Set<Commit> commits;
 
+    @OneToMany(mappedBy = "student")
+    private Set<Role> roles;
+
     @OneToOne(mappedBy = "student")
     private User user;
 
