@@ -1,6 +1,5 @@
 package org.spburegistry.backend.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import org.spburegistry.backend.enums.Degree;
@@ -48,7 +47,4 @@ public class Student extends BaseEntity {
 
     @Column(nullable = false)
     private String email;
-
-    @Nullable
-    private String role;
 }
