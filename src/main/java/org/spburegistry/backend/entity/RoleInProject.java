@@ -8,9 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="roles")
+@Table(name="roles_in_projects")
 @Data
-public class Role extends BaseEntity {
+public class RoleInProject extends BaseEntity {
 
     @Column(nullable = false)
     private String role;

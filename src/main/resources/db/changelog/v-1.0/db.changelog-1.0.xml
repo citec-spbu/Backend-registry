@@ -1,0 +1,27 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <include file="tables/faculties/01-changeset-faculties-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/tags/02-changeset-tags-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/clients/03-changeset-clients-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/educational_programs/04-changeset-educational_programs-table.sql"
+        relativeToChangelogFile="true" />
+    <include file="tables/students/05-changeset-students-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/users/06-changeset-users-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/clinics/07-changeset-clinics-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/projects/08-changeset-projects-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/commits/09-changeset-commits-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/links/10-changeset-links-table.sql" relativeToChangelogFile="true" />
+    <include file="tables/requirements/11-changeset-requirements-table.sql"
+        relativeToChangelogFile="true" />
+    <include file="tables/roles_in_projects/12-changeset-roles_in_projects-table.sql"
+        relativeToChangelogFile="true" />
+    <include file="tables/project_clinic/13-changeset-project_clinic-table.sql"
+        relativeToChangelogFile="true" />
+    <include file="tables/project_student/14-changeset-project_student-table.sql"
+        relativeToChangelogFile="true" />
+    <include file="tables/project_tag/15-changeset-project_tag-table.sql"
+        relativeToChangelogFile="true" />
+
+</databaseChangeLog>
