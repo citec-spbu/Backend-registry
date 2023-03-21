@@ -10,7 +10,7 @@ import lombok.*;
 @Entity
 @Table(name="roles_in_projects")
 @Data
-public class RoleInProject extends BaseEntity {
+public class ProjectRole extends BaseEntity {
 
     @Column(nullable = false)
     private String role;
