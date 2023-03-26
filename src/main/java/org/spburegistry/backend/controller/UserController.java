@@ -1,5 +1,8 @@
 package org.spburegistry.backend.controller;
 
+import java.util.Set;
+
+import org.spburegistry.backend.dto.UserTO;
 import org.spburegistry.backend.entity.User;
 import org.spburegistry.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +16,12 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/users/user")
-    public User getUser(@RequestParam() Long id) {
+    public UserTO getUser(@RequestParam() Long id) {
         return userService.findById(id);
     }
 
     @GetMapping("/users")
-    public Iterable<User> getAllUsers() {
+    public Set<UserTO> getAllUsers() {
         return userService.findAll();
     }
 }
