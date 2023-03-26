@@ -15,8 +15,6 @@ import java.util.Set;
 @Table(name="students")
 @Data
 public class Student extends BaseEntity {
-    @Column(nullable = false)
-    private String name;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -33,6 +31,10 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "educational_program_id", nullable = false)
     private EducationalProgram educationalProgram;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    private User user;
+
     @ManyToMany(mappedBy = "students")
     private Set<Project> projects;
 
@@ -41,10 +43,4 @@ public class Student extends BaseEntity {
 
     @OneToMany(mappedBy = "student")
     private Set<ProjectRole> roles;
-
-    @OneToOne(mappedBy = "student")
-    private User user;
-
-    @Column(nullable = false)
-    private String email;
 }

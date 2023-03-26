@@ -16,9 +16,13 @@
     <changeSet id="16" author="Andrey Butusov">
         <tagDatabase tag="v-1.0"/>
     </changeSet>
-
+    
+    <include file="v-1.1/db.changelog-1.1.xml" relativeToChangelogFile="true"/>
+    <changeSet id="20" author="Sergey Vankovich">
+        <tagDatabase tag="v-1.1"/>
+    </changeSet>
+    
     <include file="v-1.2_mock/db.changelog-1.2_mock.xml" relativeToChangelogFile="true"/>
-
     <changeSet id="32" author="Sergey Vankovich">
         <tagDatabase tag="v-1.2_mock"/>
     </changeSet>
