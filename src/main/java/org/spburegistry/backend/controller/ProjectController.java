@@ -1,6 +1,6 @@
 package org.spburegistry.backend.controller;
 
-import org.spburegistry.backend.entity.Project;
+import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +16,12 @@ public class ProjectController {
     private ProjectService projectService;
 
     @GetMapping("/projects")
-    public Iterable<Project> getAllProjects() {
+    public Iterable<ProjectTO> getAllProjects() {
         return projectService.findAll();
     }
 
     @GetMapping("/projects/project")
-    public Project getProjectById(@RequestParam() Long id) {
+    public ProjectTO getProjectById(@RequestParam() Long id) {
         return projectService.findById(id);
     }
 }

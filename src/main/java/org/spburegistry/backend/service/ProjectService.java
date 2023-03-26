@@ -1,8 +1,8 @@
 package org.spburegistry.backend.service;
 
-import org.spburegistry.backend.entity.Project;
+import org.spburegistry.backend.dto.ProjectTO;
 
 public interface ProjectService {
-    public Iterable<Project> findAll();
-    public Project findById(long id);
+    public Iterable<ProjectTO> findAll();
+    public ProjectTO findById(long id);
 }

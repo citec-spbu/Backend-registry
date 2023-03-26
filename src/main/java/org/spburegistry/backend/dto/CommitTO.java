@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommitTO {
-    private Date commit_date;
-    private int num_differences;
+    private Date commitDate;
+    private int numDifferences;
 }

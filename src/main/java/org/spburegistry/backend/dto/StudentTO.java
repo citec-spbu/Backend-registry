@@ -14,6 +14,6 @@ public class StudentTO {
     private String sex;
     private String degree;
     private String email;
-    private String grade;
+    private int grade;
     private EducationalProgramTO educationalProgram;
 }
