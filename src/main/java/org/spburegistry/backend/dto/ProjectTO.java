@@ -19,7 +19,7 @@ public class ProjectTO {
 
     private String requirements;
 
-    private ClientTO client;
+    // private ClientTO client;
 
     private Set<StudentTO> students;
 
