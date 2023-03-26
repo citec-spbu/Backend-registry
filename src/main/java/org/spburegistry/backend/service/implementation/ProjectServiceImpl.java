@@ -30,7 +30,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectTO findById(long id) {
-        Project project = projectRepo.findById(id).orElseThrow(
+        Project project =  projectRepo.findById(id).orElseThrow(
                 () -> new NoSuchEntityException("Project with id " + id + " not found"));
         return ConvertToTO.projectToTO(project);
 

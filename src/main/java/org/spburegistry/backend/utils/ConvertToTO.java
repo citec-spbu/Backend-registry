@@ -32,9 +32,9 @@ public class ConvertToTO {
 
     public static ClientTO clientToTO(Client client) {
         return ClientTO.builder()
-                .email(client.getEmail())
+                .name(client.getUser().getName())
+                .email(client.getUser().getEmail())
                 .link(client.getLink())
-                .name(client.getName())
                 .orgName(client.getOrganizationName())
                 .phone(client.getPhone())
                 .build();
@@ -60,10 +60,10 @@ public class ConvertToTO {
 
     public static StudentTO studentToTO(Student student) {
         return StudentTO.builder()
+                .name(student.getUser().getName())
+                .email(student.getUser().getEmail())
                 .degree(student.getDegree().name())
-                .name(student.getName())
                 .sex(student.getSex().name())
-                .email(student.getEmail())
                 .grade(student.getGrade())
                 .educationalProgram(EducationalProgramTO.builder()
                         .code(student.getEducationalProgram().getCode())
@@ -105,6 +105,7 @@ public class ConvertToTO {
                 .collect(Collectors.toSet());
 
         return ProjectTO.builder()
+                .client(clientToTO(project.getClient()))
                 .clinics(clinics)
                 .commits(commits)
                 .description(project.getDescription())
