@@ -7,7 +7,7 @@
     <include file="21-changeset-tags-insert-mock.sql" relativeToChangelogFile="true" />
     <include file="22-changeset-users-insert-mock.sql" relativeToChangelogFile="true" />
     <include file="23-changeset-faculties-insert-mock.sql" relativeToChangelogFile="true" />
-    <include file="24-changeset-educational-programs-insert-mock.sql"
+    <include file="24-changeset-educational_programs-insert-mock.sql"
              relativeToChangelogFile="true" />
     <include file="25-changeset-students-insert-mock.sql" relativeToChangelogFile="true" />
     <include file="26-changeset-clients-insert-mock.sql" relativeToChangelogFile="true" />
