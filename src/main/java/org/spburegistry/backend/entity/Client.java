@@ -20,15 +20,9 @@ public class Client extends BaseEntity {
     @OneToMany(mappedBy = "client")
     private Set<Project> projects;
 
-    @OneToOne(mappedBy = "client")
-    @Nullable
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private User user;
-
-    @Nullable
-    private String name;
-
-    @Nullable
-    private String email;
 
     @Nullable
     private String phone;
