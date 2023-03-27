@@ -39,6 +39,10 @@ public class Student extends BaseEntity {
     @ManyToMany(mappedBy = "students")
     private Set<Project> projects = new HashSet<>();
 
+    public void addProject(Project project) {
+        projects.add(project);
+    }
+
     @Builder.Default
     @OneToMany(mappedBy = "student")
     private Set<Commit> commits = new HashSet<>();

@@ -3,6 +3,8 @@ package org.spburegistry.backend.dto;
 import java.util.Date;
 import java.util.Set;
 
+import org.spburegistry.backend.enums.WorkFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectTO {
+    private Long projectId;
+
     private String name;
 
     private String description;
@@ -37,7 +41,7 @@ public class ProjectTO {
 
     private Set<String> requirementsForPerformers;
 
-    private String workFormat;
+    private WorkFormat workFormat;
 
     private Date start;
 

@@ -10,13 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserTO {
-    private String name;
-
-    private String email;
-
+    private Long userId;
     private String role;
-
     private StudentTO student;
-
     private ClientTO client;
 }

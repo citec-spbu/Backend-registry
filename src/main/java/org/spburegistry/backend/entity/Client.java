@@ -18,12 +18,16 @@ public class Client extends BaseEntity {
     @Column(name = "org_name", nullable = false)
     private String organizationName;
 
+    @EqualsAndHashCode.Exclude
     @Builder.Default
     @OneToMany(mappedBy = "client")
     private Set<Project> projects = new HashSet<>();
 
+    public void addProject(Project project) {
+        projects.add(project);
+    }
+
     @OneToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private User user;
 
     @Nullable

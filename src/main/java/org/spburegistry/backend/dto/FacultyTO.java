@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FacultyTO {
+    private Long facultyId;
     private String link;
     private String name;
 }

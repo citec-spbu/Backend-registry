@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClinicTO {
+    private Long clinicId;
     private String link;
     private String name;
     private FacultyTO faculty;

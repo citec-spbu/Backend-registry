@@ -22,16 +22,17 @@ public class ConvertToTO {
 
     public static UserTO userToTO(User user) {
         return UserTO.builder()
-            .name(user.getName())
-            .email(user.getEmail())
-            .role(user.getRole().name())
-            .student((user.getStudent() == null) ? null: ConvertToTO.studentToTO(user.getStudent()))
-            .client((user.getClient() == null) ? null: ConvertToTO.clientToTO(user.getClient()))
-            .build();
+                .userId(user.getId())
+                .role(user.getRole().name())
+                .student((user.getStudent() == null) ? null
+                        : ConvertToTO.studentToTO(user.getStudent()))
+                .client((user.getClient() == null) ? null : ConvertToTO.clientToTO(user.getClient()))
+                .build();
     }
 
     public static ClientTO clientToTO(Client client) {
         return ClientTO.builder()
+                .clientId(client.getId())
                 .name(client.getUser().getName())
                 .email(client.getUser().getEmail())
                 .link(client.getLink())
@@ -42,6 +43,7 @@ public class ConvertToTO {
 
     public static ClinicTO clinicToTO(Clinic clinic) {
         return ClinicTO.builder()
+                .clinicId(clinic.getId())
                 .link(clinic.getLink())
                 .name(clinic.getName())
                 .faculty(FacultyTO.builder()
@@ -53,6 +55,7 @@ public class ConvertToTO {
 
     public static CommitTO commitToTO(Commit commit) {
         return CommitTO.builder()
+                .commitId(commit.getId())
                 .commitDate(commit.getCommitDate())
                 .numDifferences(commit.getNumDifferences())
                 .build();
@@ -60,6 +63,7 @@ public class ConvertToTO {
 
     public static StudentTO studentToTO(Student student) {
         return StudentTO.builder()
+                .studentId(student.getId())
                 .name(student.getUser().getName())
                 .email(student.getUser().getEmail())
                 .degree(student.getDegree().name())
@@ -105,6 +109,7 @@ public class ConvertToTO {
                 .collect(Collectors.toSet());
 
         return ProjectTO.builder()
+                .projectId(project.getId())
                 .client(clientToTO(project.getClient()))
                 .clinics(clinics)
                 .commits(commits)
@@ -120,6 +125,7 @@ public class ConvertToTO {
                 .start(project.getStart())
                 .students(students)
                 .tags(tags)
+                .workFormat(project.getWorkFormat())
                 .build();
     }
 }
