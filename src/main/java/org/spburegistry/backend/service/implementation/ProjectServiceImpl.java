@@ -1,10 +1,10 @@
 package org.spburegistry.backend.service.implementation;
 
-import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.spburegistry.backend.ExceptionHandler.exception.NoSuchEntityException;
+import org.spburegistry.backend.ExceptionHandler.exception.NoClientIdException;
+import org.spburegistry.backend.dto.ProjectRequest;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.entity.Client;
 import org.spburegistry.backend.entity.Clinic;
@@ -18,6 +18,8 @@ import org.spburegistry.backend.service.ProjectService;
 import org.spburegistry.backend.utils.ConvertToTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -36,7 +38,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Set<ProjectTO> findAll() {
+    public Iterable<ProjectTO> findAll() {
         return projectRepo.findAll().stream().map(project -> ConvertToTO.projectToTO(project))
                 .collect(Collectors.toSet());
     }
@@ -44,49 +46,55 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectTO findById(long id) {
         Project project = projectRepo.findById(id).orElseThrow(
-                () -> new NoSuchEntityException("Project with id " + id + " not found"));
+                () -> new EntityNotFoundException("Project with id " + id + " not found"));
         return ConvertToTO.projectToTO(project);
 
     }
 
     @Override
-    public ProjectTO addProject(ProjectTO projectTO) {
+    public ProjectTO addProject(ProjectRequest projectRequest) {
         Project newProject = Project.builder()
-                .description(projectTO.getDescription())
-                .end(projectTO.getEnd())
-                .maxStudents(projectTO.getMaxStudents())
-                .name(projectTO.getName())
-                .requirements(projectTO.getRequirements())
-                .resultLink(projectTO.getResultLink())
-                .scientificSupervisor(projectTO.getScientificSupervisor())
-                .start(projectTO.getStart())
-                .workFormat(projectTO.getWorkFormat())
+                .description(projectRequest.getDescription())
+                .end(projectRequest.getEnd())
+                .maxStudents(projectRequest.getMaxStudents())
+                .name(projectRequest.getName())
+                .requirements(projectRequest.getRequirements())
+                .scientificSupervisor(projectRequest.getScientificSupervisor())
+                .start(projectRequest.getStart())
+                .workFormat(projectRequest.getWorkFormat())
                 .build();
-        newProject.setCreationTime(new Date());
-        newProject.setLastUpdateTime(new Date());
-        Client client = clientRepo.getReferenceById(projectTO.getClient().getClientId());
+
+        if (projectRequest.getClientId() == null) {
+            throw new NoClientIdException("Client Id is null");
+        }
+        Client client = clientRepo.getReferenceById(projectRequest.getClientId());
+        if (client.getCreationTime() == null) {
+            throw new EntityNotFoundException("Client with id " + projectRequest.getClientId() + " not found");
+        }
         newProject.setClient(client);
-        Set<Clinic> clinics = projectTO.getClinics().stream()
-                .map(clinicTO -> clinicRepo.getReferenceById(clinicTO.getClinicId()))
+
+        Set<Clinic> clinics = projectRequest.getClinicsId().stream()
+                .map(clinicId -> clinicRepo.getReferenceById(clinicId))
                 .collect(Collectors.toSet());
         newProject.setClinics(clinics);
-        Set<Tag> tags = projectTO.getTags().stream()
-                .map(name -> {
-                    Tag tag = tagRepo.findByName(name);
-                    if (tag == null) {
-                        tag = Tag.builder()
-                                .name(name)
-                                .build();
-                        tag.setCreationTime(new Date());
-                        tag.setLastUpdateTime(new Date());
-                        tagRepo.save(tag);
+
+        Set<Tag> tags = projectRequest.getTags().stream()
+                .map(tag -> {
+                    if (tag.getTagId() == null) {
+                        Tag newTag = tagRepo.findByName(tag.getName());
+                        if (newTag == null) {
+                            newTag = Tag.builder()
+                                    .name(tag.getName())
+                                    .build();
+                            tagRepo.save(newTag);
+                        }
+                        return newTag;
+                    } else {
+                        return tagRepo.getReferenceById(tag.getTagId());
                     }
-                    return tag;
                 }).collect(Collectors.toSet());
         newProject.setTags(tags);
-        client.addProject(newProject);
-        clinics.forEach(clinic -> clinic.addProject(newProject));
-        tags.forEach(tag -> tag.addProject(newProject));
+        
         Project project = projectRepo.save(newProject);
         return ConvertToTO.projectToTO(project);
     }

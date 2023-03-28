@@ -28,10 +28,6 @@ public class Clinic extends BaseEntity {
     @ManyToMany(mappedBy = "clinics")
     private Set<Project> projects = new HashSet<>();
 
-    public void addProject(Project project) {
-        projects.add(project);
-    }
-
     @Nullable
     private String link;
 }

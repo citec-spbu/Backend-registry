@@ -27,7 +27,7 @@ public class Client extends BaseEntity {
         projects.add(project);
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private User user;
 
     @Nullable

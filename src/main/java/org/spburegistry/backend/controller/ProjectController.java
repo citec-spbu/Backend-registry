@@ -1,5 +1,6 @@
 package org.spburegistry.backend.controller;
 
+import org.spburegistry.backend.dto.ProjectRequest;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class ProjectController {
     }
 
     @PostMapping("/project")
-    public ProjectTO addNewProject(@RequestBody ProjectTO projectTO) {
-        return projectService.addProject(projectTO);
+    public ProjectTO addNewProject(@RequestBody ProjectRequest projectRequest) {
+        return projectService.addProject(projectRequest);
     }
 }

@@ -32,16 +32,12 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "educational_program_id", nullable = false)
     private EducationalProgram educationalProgram;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private User user;
 
     @Builder.Default
     @ManyToMany(mappedBy = "students")
     private Set<Project> projects = new HashSet<>();
-
-    public void addProject(Project project) {
-        projects.add(project);
-    }
 
     @Builder.Default
     @OneToMany(mappedBy = "student")

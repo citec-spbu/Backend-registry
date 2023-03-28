@@ -48,13 +48,13 @@ public class Project extends BaseEntity {
         @Nullable
         private String resultLink;
 
-        @ManyToOne(fetch = FetchType.EAGER)
+        @ManyToOne
         @JoinColumn(name = "client_id", nullable = false)
         private Client client;
 
         @EqualsAndHashCode.Exclude
         @Builder.Default
-        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        @ManyToMany(cascade = CascadeType.ALL)
         @JoinTable(
                 name = "project_student", 
                 joinColumns = @JoinColumn(name = "project_id"), 
@@ -64,12 +64,11 @@ public class Project extends BaseEntity {
 
         public void addStudent(Student student) {
                 students.add(student);
-                student.addProject(this);
         }
 
         @EqualsAndHashCode.Exclude
         @Builder.Default
-        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+        @ManyToMany(cascade = CascadeType.ALL)
         @JoinTable(
                 name = "project_clinic", 
                 joinColumns = @JoinColumn(name = "project_id"), 
@@ -79,7 +78,7 @@ public class Project extends BaseEntity {
 
         @EqualsAndHashCode.Exclude
         @Builder.Default
-        @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+        @ManyToMany(cascade = CascadeType.ALL)
         @JoinTable(
                 name = "project_tag", 
                 joinColumns = @JoinColumn(name = "project_id"), 

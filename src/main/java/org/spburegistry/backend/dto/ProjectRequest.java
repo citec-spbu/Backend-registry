@@ -14,30 +14,20 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectTO {
-    private Long projectId;
-
+public class ProjectRequest {
     private String name;
 
     private String description;
 
     private String requirements;
 
-    private ClientTO client;
+    private Long clientId;
 
-    private Set<StudentTO> students;
-
-    private Set<ClinicTO> clinics;
+    private Set<Long> clinicsId;
 
     private Set<TagTO> tags;
 
     private String scientificSupervisor;
-
-    private String resultLink;
-
-    private Set<CommitTO> commits;
-
-    private Set<String> links;
 
     private Set<String> requirementsForPerformers;
 

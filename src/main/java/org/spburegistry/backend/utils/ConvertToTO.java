@@ -10,15 +10,48 @@ import org.spburegistry.backend.dto.EducationalProgramTO;
 import org.spburegistry.backend.dto.FacultyTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.dto.StudentTO;
+import org.spburegistry.backend.dto.TagTO;
 import org.spburegistry.backend.dto.UserTO;
 import org.spburegistry.backend.entity.Client;
 import org.spburegistry.backend.entity.Clinic;
 import org.spburegistry.backend.entity.Commit;
+import org.spburegistry.backend.entity.EducationalProgram;
+import org.spburegistry.backend.entity.Faculty;
+import org.spburegistry.backend.entity.Link;
 import org.spburegistry.backend.entity.Project;
+import org.spburegistry.backend.entity.Requirement;
 import org.spburegistry.backend.entity.Student;
+import org.spburegistry.backend.entity.Tag;
 import org.spburegistry.backend.entity.User;
 
 public class ConvertToTO {
+
+    private ConvertToTO() {
+    }
+
+    public static TagTO tagToTO(Tag tag) {
+        return TagTO.builder()
+                .tagId(tag.getId())
+                .name(tag.getName())
+                .build();
+    }
+
+    public static FacultyTO facultyToTO(Faculty faculty) {
+        return FacultyTO.builder()
+                .facultyId(faculty.getId())
+                .link(faculty.getLink())
+                .name(faculty.getName())
+                .build();
+    }
+
+    public static EducationalProgramTO educationalProgramToTO(EducationalProgram educationalProgram) {
+        return EducationalProgramTO.builder()
+                .educationalProgramId(educationalProgram.getId())
+                .code(educationalProgram.getCode())
+                .name(educationalProgram.getName())
+                .faculty(facultyToTO(educationalProgram.getFaculty()))
+                .build();
+    }
 
     public static UserTO userToTO(User user) {
         return UserTO.builder()
@@ -46,10 +79,7 @@ public class ConvertToTO {
                 .clinicId(clinic.getId())
                 .link(clinic.getLink())
                 .name(clinic.getName())
-                .faculty(FacultyTO.builder()
-                        .link(clinic.getFaculty().getLink())
-                        .name(clinic.getFaculty().getName())
-                        .build())
+                .faculty(facultyToTO(clinic.getFaculty()))
                 .build();
     }
 
@@ -69,43 +99,34 @@ public class ConvertToTO {
                 .degree(student.getDegree().name())
                 .sex(student.getSex().name())
                 .grade(student.getGrade())
-                .educationalProgram(EducationalProgramTO.builder()
-                        .code(student.getEducationalProgram().getCode())
-                        .name(student.getEducationalProgram().getName())
-                        .faculty(FacultyTO.builder()
-                                .name(student.getEducationalProgram()
-                                        .getFaculty().getName())
-                                .link(student.getEducationalProgram()
-                                        .getFaculty().getLink())
-                                .build())
-                        .build())
+                .educationalProgram(educationalProgramToTO(student.getEducationalProgram()))
                 .build();
     }
 
     public static ProjectTO projectToTO(Project project) {
 
         Set<ClinicTO> clinics = project.getClinics().stream()
-                .map(clinic -> clinicToTO(clinic))
+                .map(ConvertToTO::clinicToTO)
                 .collect(Collectors.toSet());
 
         Set<CommitTO> commits = project.getCommits().stream()
-                .map(commit -> commitToTO(commit))
+                .map(ConvertToTO::commitToTO)
                 .collect(Collectors.toSet());
 
         Set<String> links = project.getLinks().stream()
-                .map(link -> link.getLink())
+                .map(Link::getLink)
                 .collect(Collectors.toSet());
 
         Set<String> requirementsForPerformers = project.getRequirementsForPerformers().stream()
-                .map(re -> re.getRequirement())
+                .map(Requirement::getRequirement)
                 .collect(Collectors.toSet());
 
         Set<StudentTO> students = project.getStudents().stream()
-                .map(student -> studentToTO(student))
+                .map(ConvertToTO::studentToTO)
                 .collect(Collectors.toSet());
 
-        Set<String> tags = project.getTags().stream()
-                .map(tag -> tag.getName())
+        Set<TagTO> tags = project.getTags().stream()
+                .map(ConvertToTO::tagToTO)
                 .collect(Collectors.toSet());
 
         return ProjectTO.builder()

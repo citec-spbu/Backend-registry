@@ -24,8 +24,4 @@ public class Tag extends BaseEntity {
     @Builder.Default
     @ManyToMany(mappedBy = "tags")
     private Set<Project> projects = new HashSet<>();
-
-    public void addProject(Project project) {
-        projects.add(project);
-    }
 }
