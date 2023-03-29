@@ -1,6 +1,7 @@
 package org.spburegistry.backend.ExceptionHandler;
 
 import org.spburegistry.backend.ExceptionHandler.error.AppError;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,5 +32,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<AppError> catchNoClientIdException(NoClientIdException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<AppError> catchSQLException(DataIntegrityViolationException e) {
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "PLACEHOLDER#SQL operation exception"), HttpStatus.BAD_REQUEST);
     }
 }
