@@ -77,7 +77,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(tagTOS ->
                         tagTOS.stream().map(tag -> {
                             if (tag.getTagId() == null) {
-                                Tag newTag = tagRepo.findByName(tag.getName());
+                                Tag newTag = tagRepo.findByNameIgnoreCase(tag.getName());
                                 if (newTag == null) {
                                     newTag = Tag.builder()
                                             .name(tag.getName())
