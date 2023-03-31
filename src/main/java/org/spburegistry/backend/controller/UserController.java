@@ -6,18 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/data/")
+@RequestMapping("/data/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users/user")
-    public UserTO getUser(@RequestParam() Long id) {
+    @GetMapping("/user")
+    public UserTO getUserById(@RequestParam() Long id) {
         return userService.findById(id);
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public Iterable<UserTO> getAllUsers() {
         return userService.findAll();
     }

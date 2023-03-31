@@ -25,12 +25,14 @@ public class User extends BaseEntity {
     private Role role;
 
     @EqualsAndHashCode.Exclude
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = false)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     @Nullable
     private Student student;
 
     @EqualsAndHashCode.Exclude
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = false)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     @Nullable
     private Client client;
 }
+
+// spring boot why method find by id from jpa repository is return null but entity with this id exists in database
