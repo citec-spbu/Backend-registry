@@ -34,5 +34,3 @@ public class User extends BaseEntity {
     @Nullable
     private Client client;
 }
-
-// spring boot why method find by id from jpa repository is return null but entity with this id exists in database
