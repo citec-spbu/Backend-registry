@@ -6,6 +6,7 @@ import lombok.*;
 import org.spburegistry.backend.enums.WorkFormat;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = false)
@@ -13,80 +14,89 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="projects")
+@Table(name = "projects")
 @Data
 public class Project extends BaseEntity {
 
-    @Column(nullable = false)
-    private String name;
+        @Column(nullable = false)
+        private String name;
 
-    @Column(nullable = false, columnDefinition = "text")
-    private String description;
+        @Column(nullable = false, columnDefinition = "text")
+        private String description;
 
-    @Column(columnDefinition = "text")
-    private String requirements;
+        @Column(columnDefinition = "text")
+        private String requirements;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+        @Column(name = "work_format", nullable = false)
+        @Enumerated(EnumType.STRING)
+        private WorkFormat workFormat;
+        
+        @Column(name = "start_time")
+        private Date start;
+        
+        @Column(name = "end_time")
+        private Date end;
+        
+        @Column(name = "max_students")
+        private int maxStudents;
+        
+        @Column(name = "scientific_supervisor")
+        @Nullable
+        private String scientificSupervisor;
 
-    @ManyToMany (cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "project_student",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private Set<Student> students;
+        @Column(name = "result_link")
+        @Nullable
+        private String resultLink;
 
-    @ManyToMany (cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "project_clinic",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "clinic_id")
-    )
-    private Set<Clinic> clinics;
+        @ManyToOne
+        @JoinColumn(name = "client_id", nullable = false)
+        private Client client;
 
-    @ManyToMany (cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "project_tag",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<Tag> tags;
+        @EqualsAndHashCode.Exclude
+        @Builder.Default
+        @ManyToMany(cascade = CascadeType.ALL)
+        @JoinTable(
+                name = "project_student", 
+                joinColumns = @JoinColumn(name = "project_id"), 
+                inverseJoinColumns = @JoinColumn(name = "student_id")
+        )
+        private Set<Student> students = new HashSet<>();
 
-    @Column(name = "scientific_supervisor")
-    @Nullable
-    private String scientificSupervisor;
+        public void addStudent(Student student) {
+                students.add(student);
+        }
 
-    @Column(name = "result_link")
-    @Nullable
-    private String resultLink;
+        @EqualsAndHashCode.Exclude
+        @Builder.Default
+        @ManyToMany(cascade = CascadeType.ALL)
+        @JoinTable(
+                name = "project_clinic", 
+                joinColumns = @JoinColumn(name = "project_id"), 
+                inverseJoinColumns = @JoinColumn(name = "clinic_id")
+        )
+        private Set<Clinic> clinics = new HashSet<>();
 
-    @OneToMany(mappedBy = "project")
-    private Set<Commit> commits;
+        @EqualsAndHashCode.Exclude
+        @Builder.Default
+        @ManyToMany(cascade = CascadeType.ALL)
+        @JoinTable(
+                name = "project_tag", 
+                joinColumns = @JoinColumn(name = "project_id"), 
+                inverseJoinColumns = @JoinColumn(name = "tag_id")
+        )
+        private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "project")
-    private Set<Link> links;
 
-    @OneToMany(mappedBy = "project")
-    private Set<Requirement> requirementsForPerformers;
+        @Builder.Default
+        @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+        private Set<Commit> commits = new HashSet<>();
 
-    @Column(name = "work_format", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private WorkFormat workFormat;
+        @Builder.Default
+        @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+        private Set<Link> links = new HashSet<>();
 
-    @Column(name = "start_time")
-    private Date start;
+        @Builder.Default
+        @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+        private Set<Requirement> requirementsForPerformers = new HashSet<>();
 
-    @Column(name = "end_time")
-    private Date end;
-
-    @Column(name = "max_students")
-    private int maxStudents;
 }

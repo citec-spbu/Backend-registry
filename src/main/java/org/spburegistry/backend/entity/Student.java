@@ -5,6 +5,7 @@ import lombok.*;
 import org.spburegistry.backend.enums.Degree;
 import org.spburegistry.backend.enums.Sex;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = false)
@@ -31,16 +32,18 @@ public class Student extends BaseEntity {
     @JoinColumn(name = "educational_program_id", nullable = false)
     private EducationalProgram educationalProgram;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    @OneToOne
     private User user;
 
+    @Builder.Default
     @ManyToMany(mappedBy = "students")
-    private Set<Project> projects;
+    private Set<Project> projects = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "student")
-    private Set<Commit> commits;
+    private Set<Commit> commits = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "student")
-    private Set<ProjectRole> roles;
+    private Set<ProjectRole> roles = new HashSet<>();
 }

@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = false)
@@ -17,11 +18,16 @@ public class Client extends BaseEntity {
     @Column(name = "org_name", nullable = false)
     private String organizationName;
 
+    @EqualsAndHashCode.Exclude
+    @Builder.Default
     @OneToMany(mappedBy = "client")
-    private Set<Project> projects;
+    private Set<Project> projects = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    public void addProject(Project project) {
+        projects.add(project);
+    }
+
+    @OneToOne
     private User user;
 
     @Nullable

@@ -1,11 +1,16 @@
 package org.spburegistry.backend.service.implementation;
 
-import org.spburegistry.backend.ExceptionHandler.exception.NoSuchUserException;
+import java.util.stream.Collectors;
+
+import org.spburegistry.backend.dto.UserTO;
 import org.spburegistry.backend.entity.User;
 import org.spburegistry.backend.repository.UserRepo;
 import org.spburegistry.backend.service.UserService;
+import org.spburegistry.backend.utils.ConvertToTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,19 +23,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(long id) {
-        return userRepo.findById(id).orElseThrow(
-            () -> new NoSuchUserException("User with id " + id + " not found"));
+    public UserTO findById(long id) {
+        User user = userRepo.findById(id).orElseThrow(
+            () -> new EntityNotFoundException("User with id " + id + " not found"));
+        return ConvertToTO.userToTO(user);
     }
 
     @Override
-    public User findByName(String name) {
-        return userRepo.findByName(name);
-    }
-
-    @Override
-    public Iterable<User> findAll() {
-        return userRepo.findAll();
+    public Iterable<UserTO> findAll() {
+        return userRepo.findAll().stream()
+            .map(ConvertToTO::userToTO)
+            .collect(Collectors.toSet());
     }
     
 }

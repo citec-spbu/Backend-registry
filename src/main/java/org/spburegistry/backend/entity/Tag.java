@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = false)
@@ -20,6 +21,7 @@ public class Tag extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Builder.Default
     @ManyToMany(mappedBy = "tags")
-    private Set<Project> projects;
+    private Set<Project> projects = new HashSet<>();
 }

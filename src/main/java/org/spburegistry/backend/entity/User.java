@@ -24,11 +24,13 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     @Nullable
     private Student student;
 
-    @OneToOne(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     @Nullable
     private Client client;
 }
