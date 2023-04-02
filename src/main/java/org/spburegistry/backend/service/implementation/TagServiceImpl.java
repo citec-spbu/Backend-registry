@@ -1,6 +1,5 @@
 package org.spburegistry.backend.service.implementation;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.spburegistry.backend.ExceptionHandler.exception.EntityAlreadyExistsException;
@@ -27,7 +26,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public Iterable<TagTO> findAll() {
         return tagRepo.findAll().stream().map(ConvertToTO::tagToTO)
-                    .collect(Collectors.toSet());
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -36,22 +35,24 @@ public class TagServiceImpl implements TagService {
                 .orElseThrow(() -> new EntityNotFoundException("Tag with id " + id + " not found")));
     }
 
-    
     @Override
     public Iterable<TagTO> findTagByRegex(String regex) {
         return tagRepo.findByNameContainsIgnoreCase(regex).stream().map(ConvertToTO::tagToTO)
-                    .collect(Collectors.toSet());
+                .collect(Collectors.toSet());
     }
-    
+
     @Override
     public TagTO addTag(TagTO tagTO) {
-        Optional.ofNullable(tagRepo.findByNameIgnoreCase(tagTO.getName()))
-                .ifPresent(tag -> new EntityAlreadyExistsException("Tag with name " + tag.getName() + " already exists"));
-        Tag newTag = Tag.builder()
-                        .name(tagTO.getName())
-                        .build();
-        Tag tag = tagRepo.save(newTag);
-        return ConvertToTO.tagToTO(tag);          
-        
+        Tag newTag = tagRepo.findByNameIgnoreCase(tagTO.getName());
+        if (newTag == null) {
+            newTag = Tag.builder()
+                    .name(tagTO.getName())
+                    .build();
+            tagRepo.save(newTag);
+        } else {
+            throw new EntityAlreadyExistsException("Tag with name " + tagTO.getName() + " already exists");
+        }
+        return ConvertToTO.tagToTO(newTag);
+
     }
 }

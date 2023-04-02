@@ -33,10 +33,10 @@ public class ClinicServiceImpl implements ClinicService{
     public ClinicTO findByParam(Optional<Long> id, Optional<String> name) {
         if (!id.isPresent()) {
             return ConvertToTO.clinicToTO(Optional.ofNullable(clinicRepo.findByName(name.get()))
-                    .orElseThrow(() -> new EntityNotFoundException("Client with name " + name.get() + " not found")));
+                    .orElseThrow(() -> new EntityNotFoundException("Clinic with name " + name.get() + " not found")));
         } else {
             return ConvertToTO.clinicToTO(clinicRepo.findById(id.get())
-                    .orElseThrow(() -> new EntityNotFoundException("Client with id " + id.get() + " not found")));
+                    .orElseThrow(() -> new EntityNotFoundException("Clinic with id " + id.get() + " not found")));
         }
     }
 
@@ -51,16 +51,16 @@ public class ClinicServiceImpl implements ClinicService{
         Clinic newClinic = Clinic.builder()
                             .link(clinicRequestTO.getLink())
                             .name(clinicRequestTO.getName())
-                            .faculty(getFaculty(clinicRequestTO.getFacultyId()))
+                            .faculty(getFaculty(clinicRequestTO))
                             .build();
         Clinic clinic = clinicRepo.save(newClinic);
         return ConvertToTO.clinicToTO(clinic);
     }
 
-    private Faculty getFaculty(long facultyId) {
+    private Faculty getFaculty(ClinicRequestTO clinicRequestTO) {
         return facultyRepo.findById(
-                Optional.ofNullable(facultyId).orElseThrow(() -> new NoEntityIdException("Faculty Id is null")))
-                .orElseThrow(() -> new EntityNotFoundException("Faculty with id " + facultyId + " not found"));
+                Optional.ofNullable(clinicRequestTO.getFacultyId()).orElseThrow(() -> new NoEntityIdException("Faculty Id is null")))
+                .orElseThrow(() -> new EntityNotFoundException("Faculty with id " + clinicRequestTO.getFacultyId() + " not found"));
     }
     
 }
