@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClinicRequestTO {
-    private Long clinicId;
     private String link;
     private String name;
     private Long facultyId;

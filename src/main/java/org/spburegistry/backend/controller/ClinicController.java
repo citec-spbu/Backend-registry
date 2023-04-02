@@ -26,7 +26,7 @@ public class ClinicController {
     }
 
     @GetMapping("/clinic")
-    public ClinicTO getClinicById(
+    public ClinicTO getClinicByParam(
         @RequestParam Optional<Long> id, 
         @RequestParam Optional<String> name
     ) {

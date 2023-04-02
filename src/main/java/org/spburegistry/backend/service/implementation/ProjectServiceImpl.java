@@ -87,7 +87,6 @@ public class ProjectServiceImpl implements ProjectService {
                                 return newTag;
                             }
                             return tagRepo.getReferenceById(tag.getTagId());
-
                         }).collect(Collectors.toSet()))
                 .orElse(new HashSet<Tag>());
     }
