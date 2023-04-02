@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import jakarta.persistence.EntityNotFoundException;
 
-import org.spburegistry.backend.ExceptionHandler.exception.NoClientIdException;
+import org.spburegistry.backend.ExceptionHandler.exception.NoEntityIdException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchNoClientIdException(NoClientIdException e) {
+    public ResponseEntity<AppError> catchNoEntityIdException(NoEntityIdException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), e.getMessage()), HttpStatus.NOT_FOUND);
     }
