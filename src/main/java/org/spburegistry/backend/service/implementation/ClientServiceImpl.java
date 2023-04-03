@@ -30,21 +30,21 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Iterable<UserTO> findAll() {
-        return userRepo.findAll().stream()
-                .filter(user -> user.getStudent() == null)
-                .map(ConvertToTO::userToTO)
+        return clientRepo.findAll().stream()
+                .map(client -> ConvertToTO.userToTO(client.getUser()))
                 .collect(Collectors.toSet());
     }
 
     @Override
     public UserTO findById(long id) {
-        Client client = clientRepo.findById(id)
+        return clientRepo.findById(id)
+                .map(Client::getUser)
+                .map(ConvertToTO::userToTO)
                 .orElseThrow(() -> new EntityNotFoundException("Client with id " + id + " not found"));
-        return ConvertToTO.userToTO(client.getUser());
     }
 
     @Override
-    public UserTO addClient(ClientTO clientTO) {
+    public ClientTO addClient(ClientTO clientTO) {
         User newUser = User.builder()
                 .role(Role.USER)
                 .name(clientTO.getName())
@@ -58,11 +58,7 @@ public class ClientServiceImpl implements ClientService {
                 .user(user)
                 .build();
         Client client = clientRepo.save(newClient);
-        return ConvertToTO.userToTO(client.getUser());
+        return ConvertToTO.clientToTO(client);
     }
-
-    // private Client getClient(ClientTO clientTO) {
-    // return
-    // }
 
 }

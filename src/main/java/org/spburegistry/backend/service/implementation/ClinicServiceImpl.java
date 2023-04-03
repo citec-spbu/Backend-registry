@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class ClinicServiceImpl implements ClinicService{
-    
+public class ClinicServiceImpl implements ClinicService {
+
     private final ClinicRepo clinicRepo;
     private final FacultyRepo facultyRepo;
-    
+
     @Autowired
     public ClinicServiceImpl(ClinicRepo clinicRepo, FacultyRepo facultyRepo) {
         this.clinicRepo = clinicRepo;
@@ -30,37 +30,41 @@ public class ClinicServiceImpl implements ClinicService{
     }
 
     @Override
-    public ClinicTO findByParam(Optional<Long> id, Optional<String> name) {
-        if (!id.isPresent()) {
-            return ConvertToTO.clinicToTO(Optional.ofNullable(clinicRepo.findByName(name.get()))
-                    .orElseThrow(() -> new EntityNotFoundException("Clinic with name " + name.get() + " not found")));
-        } else {
-            return ConvertToTO.clinicToTO(clinicRepo.findById(id.get())
-                    .orElseThrow(() -> new EntityNotFoundException("Clinic with id " + id.get() + " not found")));
-        }
+    public ClinicTO findById(long id) {
+        return ConvertToTO.clinicToTO(clinicRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Clinic with id " + id + " not found")));
+
+    }
+
+    @Override
+    public ClinicTO findByName(String name) {
+        return ConvertToTO.clinicToTO(Optional.ofNullable(clinicRepo.findByName(name))
+                .orElseThrow(() -> new EntityNotFoundException("Clinic with name " + name + " not found")));
     }
 
     @Override
     public Iterable<ClinicTO> findAll() {
         return clinicRepo.findAll().stream().map(ConvertToTO::clinicToTO)
-        .collect(Collectors.toSet());
+                .collect(Collectors.toSet());
     }
 
     @Override
     public ClinicTO addClinic(ClinicRequestTO clinicRequestTO) {
         Clinic newClinic = Clinic.builder()
-                            .link(clinicRequestTO.getLink())
-                            .name(clinicRequestTO.getName())
-                            .faculty(getFaculty(clinicRequestTO))
-                            .build();
+                .link(clinicRequestTO.getLink())
+                .name(clinicRequestTO.getName())
+                .faculty(getFaculty(clinicRequestTO))
+                .build();
         Clinic clinic = clinicRepo.save(newClinic);
         return ConvertToTO.clinicToTO(clinic);
     }
 
     private Faculty getFaculty(ClinicRequestTO clinicRequestTO) {
         return facultyRepo.findById(
-                Optional.ofNullable(clinicRequestTO.getFacultyId()).orElseThrow(() -> new NoEntityIdException("Faculty Id is null")))
-                .orElseThrow(() -> new EntityNotFoundException("Faculty with id " + clinicRequestTO.getFacultyId() + " not found"));
+                Optional.ofNullable(clinicRequestTO.getFacultyId())
+                        .orElseThrow(() -> new NoEntityIdException("Faculty Id is null")))
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Faculty with id " + clinicRequestTO.getFacultyId() + " not found"));
     }
-    
+
 }

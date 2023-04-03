@@ -4,10 +4,10 @@ import org.spburegistry.backend.dto.TagTO;
 import org.spburegistry.backend.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -23,14 +23,14 @@ public class TagController {
         return tagService.findAll();
     }
 
-    @GetMapping("/tag/id")
-    public TagTO getTagById(@RequestParam Long id) {
+    @GetMapping("/tag/id/{id}")
+    public TagTO getTagById(@PathVariable Long id) {
         return tagService.findTagById(id);
     }
 
-    @GetMapping("/tag/regex")
-    public Iterable<TagTO> getTagsByRegex(@RequestParam String regex) {
-        return tagService.findTagByRegex(regex);
+    @GetMapping("/tag/substring/{substring}")
+    public Iterable<TagTO> getTagsBySubstring(@PathVariable String substring) {
+        return tagService.findTagBySubstring(substring);
     }
 
     @PostMapping("/tag")

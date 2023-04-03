@@ -29,7 +29,7 @@ public class ClientController {
     }
 
     @PostMapping("/client")
-    public UserTO addNewClient(@RequestBody ClientTO clientTO) {
+    public ClientTO addNewClient(@RequestBody ClientTO clientTO) {
         return clientService.addClient(clientTO);
     }
 }

@@ -36,8 +36,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Iterable<TagTO> findTagByRegex(String regex) {
-        return tagRepo.findByNameContainsIgnoreCase(regex).stream().map(ConvertToTO::tagToTO)
+    public Iterable<TagTO> findTagBySubstring(String substring) {
+        return tagRepo.findByNameContainsIgnoreCase(substring).stream().map(ConvertToTO::tagToTO)
                 .collect(Collectors.toSet());
     }
 
