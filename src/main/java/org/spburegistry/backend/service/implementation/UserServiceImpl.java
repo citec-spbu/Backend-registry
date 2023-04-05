@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.spburegistry.backend.dto.UserTO;
 import org.spburegistry.backend.entity.User;
+import org.spburegistry.backend.enums.Role;
 import org.spburegistry.backend.repository.UserRepo;
 import org.spburegistry.backend.service.UserService;
 import org.spburegistry.backend.utils.ConvertToTO;
@@ -34,6 +35,16 @@ public class UserServiceImpl implements UserService {
         return userRepo.findAll().stream()
             .map(ConvertToTO::userToTO)
             .collect(Collectors.toSet());
+    }
+
+    @Override
+    public User createUser(String name, String email) {
+        User newUser = User.builder()
+                .role(Role.USER)
+                .name(name)
+                .email(email)
+                .build();
+        return userRepo.save(newUser);
     }
     
 }

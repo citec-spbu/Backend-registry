@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ClinicRepo extends JpaRepository<Clinic, Long> {
 
-    public Clinic findByName(String name);
+    Clinic findByName(String name);
     
 }

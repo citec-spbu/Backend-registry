@@ -4,7 +4,7 @@ import org.spburegistry.backend.dto.ClientTO;
 import org.spburegistry.backend.dto.UserTO;
 
 public interface ClientService {
-    public Iterable<UserTO> findAll();
-    public UserTO findById(long id);
-    public ClientTO addClient(ClientTO userTO); 
+    Iterable<UserTO> findAll();
+    UserTO findById(long id);
+    ClientTO addClient(ClientTO userTO); 
 }
