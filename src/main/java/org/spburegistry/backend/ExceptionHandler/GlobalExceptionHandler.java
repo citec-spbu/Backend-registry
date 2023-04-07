@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import jakarta.persistence.EntityNotFoundException;
 
-import org.spburegistry.backend.ExceptionHandler.exception.NoClientIdException;
+import org.spburegistry.backend.ExceptionHandler.exception.EntityAlreadyExistsException;
+import org.spburegistry.backend.ExceptionHandler.exception.NoEntityIdException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchNoClientIdException(NoClientIdException e) {
+    public ResponseEntity<AppError> catchNoEntityIdException(NoEntityIdException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), e.getMessage()), HttpStatus.NOT_FOUND);
     }
@@ -38,5 +39,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<AppError> catchSQLException(DataIntegrityViolationException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "PLACEHOLDER#SQL operation exception"), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<AppError> catchEntityAlreadyExistsException(EntityAlreadyExistsException e) {
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(), e.getMessage()), HttpStatus.CONFLICT);
     }
 }

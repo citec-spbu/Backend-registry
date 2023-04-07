@@ -1,10 +1,10 @@
 package org.spburegistry.backend.service;
 
+import org.spburegistry.backend.dto.ClientTO;
 import org.spburegistry.backend.dto.UserTO;
-import org.spburegistry.backend.entity.User;
 
-public interface UserService {
+public interface ClientService {
     Iterable<UserTO> findAll();
     UserTO findById(long id);
-    User createUser(String name, String email);
+    ClientTO addClient(ClientTO userTO); 
 }

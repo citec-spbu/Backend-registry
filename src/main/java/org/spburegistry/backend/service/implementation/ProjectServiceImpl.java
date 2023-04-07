@@ -1,7 +1,7 @@
 package org.spburegistry.backend.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.spburegistry.backend.ExceptionHandler.exception.NoClientIdException;
+import org.spburegistry.backend.ExceptionHandler.exception.NoEntityIdException;
 import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.dto.TagTO;
@@ -87,7 +87,6 @@ public class ProjectServiceImpl implements ProjectService {
                                 return newTag;
                             }
                             return tagRepo.getReferenceById(tag.getTagId());
-
                         }).collect(Collectors.toSet()))
                 .orElse(new HashSet<Tag>());
     }
@@ -103,7 +102,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private Client getClient(Long clientId) {
         return clientRepo.findById(
-                Optional.ofNullable(clientId).orElseThrow(() -> new NoClientIdException("Client Id is null")))
+                Optional.ofNullable(clientId).orElseThrow(() -> new NoEntityIdException("Client Id is null")))
                 .orElseThrow(() -> new EntityNotFoundException("Client with id " + clientId + " not found"));
     }
 
