@@ -1,6 +1,7 @@
 package org.spburegistry.backend.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.spburegistry.backend.dto.FacultyRequestTO;
 import org.spburegistry.backend.dto.FacultyTO;
 import org.spburegistry.backend.entity.Faculty;
 import org.spburegistry.backend.repository.FacultyRepo;
@@ -39,6 +40,12 @@ public class FacultyServiceImpl implements FacultyService {
                 .link(link)
                 .build();
         return facultyRepo.save(newFaculty);
+    }
+
+    @Override
+    public FacultyTO addFaculty(FacultyRequestTO facultyRequestTO){
+        Faculty newFaculty = createFaculty(facultyRequestTO.getName(), facultyRequestTO.getLink());
+        return ConvertToTO.facultyToTO(newFaculty);
     }
 }
 
