@@ -1,50 +1,47 @@
 package org.spburegistry.backend.config;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-//TODO: modify this class when we start work with security
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration {
+    private final JwtFilter jwtFilter;
 
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
-// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-// import org.springframework.security.core.userdetails.User;
-// import org.springframework.security.core.userdetails.UserDetails;
-// import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-// import org.springframework.security.crypto.password.PasswordEncoder;
-// import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-// import org.springframework.security.web.SecurityFilterChain;
+    @Autowired
+    public SecurityConfiguration(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
 
-// @Configuration
-// @EnableWebSecurity
-// public class SecurityConfiguration {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(
+                        (request, response, ex) -> response.sendError(
+                                HttpServletResponse.SC_UNAUTHORIZED,
+                                ex.getMessage()
+                        )
+                )
+                .and()
+                .authorizeHttpRequests(
+                        authz -> authz
+                                .requestMatchers("/auth", "/testGoogle").permitAll()
+                                .anyRequest().authenticated()
+                                .and()
+                                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                ).build();
 
-//     @Bean
-//     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-//         UserDetails user = User.withUsername("user")
-//                 .password(passwordEncoder.encode("password"))
-//                 .roles("USER")
-//                 .build();
-
-//         UserDetails admin = User.withUsername("admin")
-//                 .password(passwordEncoder.encode("admin"))
-//                 .roles("USER", "ADMIN")
-//                 .build();
-
-//         return new InMemoryUserDetailsManager(user, admin);
-//     }
-
-//     @Bean
-//     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//         http.authorizeHttpRequests()
-//                 .requestMatchers("/*").permitAll()
-//                 .requestMatchers("/data/users/*").permitAll()
-//                 .anyRequest().authenticated();
-//         return http.build();
-//     }
-
-//     @Bean
-//     public PasswordEncoder passwordEncoder() {
-//         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-//         return encoder;
-//     }
-// }
+    }
+}
