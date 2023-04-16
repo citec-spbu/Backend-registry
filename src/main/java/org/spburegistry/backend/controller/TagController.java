@@ -23,6 +23,11 @@ public class TagController {
         return tagService.findAll();
     }
 
+    @GetMapping("/sortedByWeight")
+    public Iterable<TagTO> getAllTagsSortedByWeight() {
+        return tagService.findAllTagsSortedByWeight();
+    }
+
     @GetMapping("/tag/id/{id}")
     public TagTO getTagById(@PathVariable Long id) {
         return tagService.findTagById(id);

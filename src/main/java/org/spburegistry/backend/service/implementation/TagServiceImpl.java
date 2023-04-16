@@ -55,4 +55,12 @@ public class TagServiceImpl implements TagService {
         return ConvertToTO.tagToTO(newTag);
 
     }
+
+    @Override
+    public Iterable<TagTO> findAllTagsSortedByWeight() {
+        return tagRepo.findAll().stream()
+                .sorted((tag1, tag2) -> tag2.getProjects().size() - tag1.getProjects().size())
+                .map(ConvertToTO::tagToTO)
+                .collect(Collectors.toList());
+    }
 }
