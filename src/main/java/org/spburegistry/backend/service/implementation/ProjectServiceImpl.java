@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,6 +71,12 @@ public class ProjectServiceImpl implements ProjectService {
                 .build();
         Project project = projectRepo.save(newProject);
         return ConvertToTO.projectToTO(project);
+    }
+
+    @Override
+    public List<ProjectTO> findProjectsBetweenDates(java.util.Date startDate, java.util.Date endDate) {
+        return projectRepo.findProjectsBetweenDates(startDate, endDate).stream().map(ConvertToTO::projectToTO)
+        .collect(Collectors.toList());
     }
 
     private Set<Tag> getTags(Set<TagTO> tags) {

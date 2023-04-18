@@ -1,9 +1,13 @@
 package org.spburegistry.backend.controller;
 
+import java.util.Date;
+import java.util.List;
+
 import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,10 +22,14 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @GetMapping
-    public Iterable<ProjectTO> getAllProjects() {
-        return projectService.findAll();
+    @GetMapping("/projects")
+    public List<ProjectTO> getProjectsBetweenDates(
+    @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+    @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
+    ) {
+    return projectService.findProjectsBetweenDates(startDate, endDate);
     }
+
 
     @GetMapping("/project")
     public ProjectTO getProjectById(@RequestParam() Long id) {
