@@ -49,21 +49,14 @@ public class TagServiceImpl implements TagService {
     @Override
     public Iterable<TagTO> findTagsBySubstringSortedByWeight(Optional<Boolean> sortedByWeight,
             Optional<String> substring) {
-        List<Tag> tags;
-        if (substring.isPresent()) {
-            tags = tagRepo.findByNameContainsIgnoreCase(substring.get());
-        } else {
-            tags = tagRepo.findAll();
+        List<Tag> tags = substring.map(tagRepo::findByNameContainsIgnoreCase)
+                .orElse(tagRepo.findAll());
+        if (sortedByWeight.orElse(false)) {
+            tags.sort((tag1, tag2) -> tag2.getProjects().size() - tag1.getProjects().size());
         }
-        if (sortedByWeight.isPresent() && sortedByWeight.get()) {
-            return tags.stream()
-                    .sorted((tag1, tag2) -> tag2.getProjects().size() - tag1.getProjects().size())
-                    .map(ConvertToTO::tagToTO)
-                    .collect(Collectors.toList());
-        } else {
-            return tags.stream()
-                    .map(ConvertToTO::tagToTO)
-                    .collect(Collectors.toList());
-        }
+        return tags.stream()
+                .map(ConvertToTO::tagToTO)
+                .collect(Collectors.toList());
+
     }
 }

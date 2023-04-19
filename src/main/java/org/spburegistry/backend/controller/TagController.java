@@ -21,7 +21,7 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping
-    public Iterable<TagTO> getTagsBySubstringSrtedByWeight(
+    public Iterable<TagTO> getTagsBySubstringSortedByWeight(
             @RequestParam("sortedByWeight") Optional<Boolean> sortedByWeight,
             @RequestParam("substring") Optional<String> substring) {
         return tagService.findTagsBySubstringSortedByWeight(sortedByWeight, substring);
