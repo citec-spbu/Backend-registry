@@ -46,12 +46,8 @@ public class JwtProvider {
     }
 
     public String generateRefreshToken(User user, GoogleTokenTO googleTokenTO) {
-        final LocalDateTime now = LocalDateTime.now();
-        final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
-        final Date refreshExpiration = Date.from(refreshExpirationInstant);
         return Jwts.builder()
                 .setSubject(user.getEmail())
-                .setExpiration(refreshExpiration)
                 .signWith(jwtRefreshSecret)
                 .claim("googleRefreshToken", googleTokenTO.getRefreshToken())
                 .compact();

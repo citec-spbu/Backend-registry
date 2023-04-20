@@ -1,39 +1,48 @@
 package org.spburegistry.backend.config;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.jetbrains.annotations.NotNull;
+import org.spburegistry.backend.ExceptionHandler.error.TokenError;
+import org.spburegistry.backend.utils.PropertiesParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
+
+import static org.spburegistry.backend.utils.CookieUtils.getTokenCookie;
 
 @Component
 public class JwtFilter extends GenericFilterBean {
 
     private static final String ACCESS_TOKEN_COOKIE_NAME = "access_token";
     private final JwtProvider jwtProvider;
+    private final PropertiesParser propertiesParser;
 
     @Autowired
-    public JwtFilter(JwtProvider jwtProvider) {
+    public JwtFilter(JwtProvider jwtProvider, PropertiesParser propertiesParser) {
         this.jwtProvider = jwtProvider;
+        this.propertiesParser = propertiesParser;
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        Optional<Cookie> accessTokenCookie = getAccessTokenCookie(servletRequest);
+        if (isPermittedPath((HttpServletRequest) servletRequest)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+        Optional<Cookie> accessTokenCookie = getTokenCookie(servletRequest, ACCESS_TOKEN_COOKIE_NAME);
         if (accessTokenCookie.isPresent()) {
             String accessToken = accessTokenCookie.get().getValue();
             try {
@@ -41,22 +50,26 @@ public class JwtFilter extends GenericFilterBean {
                 Claims claims = jwtProvider.getAccessTokenClaims(accessToken);
                 JwtAuthentication authentication = getJwtAuthentication(claims);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (ExpiredJwtException exception) {
-                refreshToken();
             } catch (Exception exception) {
-                ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                processException((HttpServletRequest) servletRequest, servletResponse, exception);
             }
         }
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    @NotNull
-    private static Optional<Cookie> getAccessTokenCookie(ServletRequest request) {
-        return Optional.ofNullable(((HttpServletRequest) request).getCookies())
-                .flatMap(cookies -> Arrays.stream(cookies)
-                        .filter(cookie -> cookie.getName().equals(ACCESS_TOKEN_COOKIE_NAME))
-                        .findFirst());
+    private void processException(HttpServletRequest servletRequest, ServletResponse servletResponse, Exception exception) throws IOException {
+        TokenError tokenError = new TokenError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage(), servletRequest.getServletPath());
+        servletResponse.getWriter().write(convertObjectToJson(tokenError));
+        servletResponse.setContentType("application/json");
+    }
+
+    public static String convertObjectToJson(Object object) throws JsonProcessingException {
+        if (object == null) {
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(object);
     }
 
     private static JwtAuthentication getJwtAuthentication(Claims claims) {
@@ -69,6 +82,7 @@ public class JwtFilter extends GenericFilterBean {
                 .build();
     }
 
-    private void refreshToken() {
+    private boolean isPermittedPath(HttpServletRequest request) {
+        return propertiesParser.getPermittedPaths().stream().anyMatch(request.getServletPath()::startsWith);
     }
 }

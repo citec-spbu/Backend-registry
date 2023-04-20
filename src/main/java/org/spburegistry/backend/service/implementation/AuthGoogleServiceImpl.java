@@ -2,9 +2,11 @@ package org.spburegistry.backend.service.implementation;
 
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import org.spburegistry.backend.ExceptionHandler.exception.GoogleAuthException;
 import org.spburegistry.backend.config.JwtProvider;
 import org.spburegistry.backend.dto.AuthResponse;
-import org.spburegistry.backend.dto.GoogleTokenRequestTO;
+import org.spburegistry.backend.dto.GoogleTokenByCodeRequestTO;
+import org.spburegistry.backend.dto.GoogleTokenByRefreshTokenRequestTO;
 import org.spburegistry.backend.dto.GoogleTokenTO;
 import org.spburegistry.backend.entity.User;
 import org.spburegistry.backend.external_services.GoogleApiService;
@@ -20,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @PropertySource("classpath:application.properties")
-public class AuthServiceImpl implements AuthService {
+public class AuthGoogleServiceImpl implements AuthService {
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
@@ -34,11 +36,11 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProvider jwtProvider;
 
     @Autowired
-    public AuthServiceImpl(GoogleAuthenticationService googleAuthenticationService,
-                           GoogleApiService googleApiService,
-                           UserRepo userRepo,
-                           UserService userService,
-                           JwtProvider jwtProvider) {
+    public AuthGoogleServiceImpl(GoogleAuthenticationService googleAuthenticationService,
+                                 GoogleApiService googleApiService,
+                                 UserRepo userRepo,
+                                 UserService userService,
+                                 JwtProvider jwtProvider) {
         this.googleAuthenticationService = googleAuthenticationService;
         this.googleApiService = googleApiService;
         this.userRepo = userRepo;
@@ -46,12 +48,27 @@ public class AuthServiceImpl implements AuthService {
         this.jwtProvider = jwtProvider;
     }
     @Override
-    public Single<AuthResponse> authenticateUserByGoogle(String code) {
-        return googleAuthenticationService.getToken(getGoogleTokenRequestTO(code))
+    public Single<AuthResponse> authenticateUser(String code) {
+        return googleAuthenticationService.getToken(getGoogleTokenByCodeRequestTO(code))
                 .subscribeOn(Schedulers.io())
                 .flatMap(this::getUserInfo)
                 .map(this::processUser)
-                .onErrorReturn(error -> new AuthResponse("failure", null, null, error.getLocalizedMessage()));
+                .onErrorResumeNext(error -> Single.error(new GoogleAuthException(error.getMessage())));
+    }
+
+    @Override
+    public Single<AuthResponse> refreshAccessToken(String refreshToken) {
+        jwtProvider.validateRefreshToken(refreshToken);
+        String googleRefreshToken = jwtProvider.getRefreshTokenClaims(refreshToken).get("googleRefreshToken", String.class);
+        return googleApiService.getGoogleAccessToken(getGoogleTokenByRefreshTokenRequestTO(googleRefreshToken))
+                .subscribeOn(Schedulers.io())
+                .flatMap(this::getUserInfo)
+                .map(this::processUser)
+                .map(authResponse -> {
+                    authResponse.setRefreshToken(null);
+                    return authResponse;
+                })
+                .onErrorResumeNext(error -> Single.error(new GoogleAuthException(error.getMessage())));
     }
 
     private AuthResponse processUser(Pair<User, GoogleTokenTO> pair) {
@@ -60,15 +77,18 @@ public class AuthServiceImpl implements AuthService {
         if (userRepo.findByEmail(user.getEmail()) == null){
             userService.createUser(user.getName(), user.getEmail());
         }
-        return new AuthResponse("success", jwtProvider.generateAccessToken(user, googleTokenTO), jwtProvider.generateRefreshToken(user, googleTokenTO), null);
+        return AuthResponse.builder()
+                .accessToken(jwtProvider.generateAccessToken(user, googleTokenTO))
+                .refreshToken(jwtProvider.generateRefreshToken(user, googleTokenTO))
+                .build();
     }
 
     private Single<Pair<User, GoogleTokenTO>> getUserInfo(GoogleTokenTO accessToken) {
         return googleApiService.getGoogleUserInfo(accessToken.getAccessToken()).map(user -> Pair.of(user, accessToken));
     }
 
-    private GoogleTokenRequestTO getGoogleTokenRequestTO(String code) {
-        return GoogleTokenRequestTO.builder()
+    private GoogleTokenByCodeRequestTO getGoogleTokenByCodeRequestTO(String code) {
+        return GoogleTokenByCodeRequestTO.builder()
                 .clientId(googleClientId)
                 .clientSecret(googleClientSecret)
                 .code(code)
@@ -77,9 +97,12 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-
-    @Override
-    public Single<AuthResponse> authenticateUserBySpbu() {
-        throw new UnsupportedOperationException("not yet implemented");
+    private GoogleTokenByRefreshTokenRequestTO getGoogleTokenByRefreshTokenRequestTO(String refreshToken) {
+        return GoogleTokenByRefreshTokenRequestTO.builder()
+                .clientId(googleClientId)
+                .clientSecret(googleClientSecret)
+                .refreshToken(refreshToken)
+                .grantType("refresh_token")
+                .build();
     }
 }

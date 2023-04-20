@@ -4,6 +4,6 @@ import io.reactivex.rxjava3.core.Single;
 import org.spburegistry.backend.dto.AuthResponse;
 
 public interface AuthService {
-    Single<AuthResponse> authenticateUserByGoogle(String code);
-    Single<AuthResponse> authenticateUserBySpbu();
+    Single<AuthResponse> authenticateUser(String code);
+    Single<AuthResponse> refreshAccessToken(String refreshToken);
 }
