@@ -8,7 +8,6 @@ public interface FacultyService {
     Iterable<FacultyTO> findAll();
 
     FacultyTO findById(long id);
-    Faculty createFaculty(String name, String link);
 
     FacultyTO addFaculty(FacultyRequestTO facultyRequestTO);
 }

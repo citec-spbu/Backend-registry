@@ -32,9 +32,7 @@ public class FacultyServiceImpl implements FacultyService {
                 .collect(Collectors.toSet());
     }
 
-
-    @Override
-    public Faculty createFaculty(String name, String link) {
+    private Faculty createFaculty(String name, String link) {
         Faculty newFaculty = Faculty.builder()
                 .name(name)
                 .link(link)
