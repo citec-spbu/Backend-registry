@@ -1,5 +1,7 @@
 package org.spburegistry.backend.service.implementation;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.spburegistry.backend.ExceptionHandler.exception.EntityAlreadyExistsException;
@@ -24,21 +26,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Iterable<TagTO> findAll() {
-        return tagRepo.findAll().stream().map(ConvertToTO::tagToTO)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
     public TagTO findTagById(long id) {
         return ConvertToTO.tagToTO(tagRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tag with id " + id + " not found")));
-    }
-
-    @Override
-    public Iterable<TagTO> findTagBySubstring(String substring) {
-        return tagRepo.findByNameContainsIgnoreCase(substring).stream().map(ConvertToTO::tagToTO)
-                .collect(Collectors.toSet());
     }
 
     @Override
@@ -53,6 +43,20 @@ public class TagServiceImpl implements TagService {
             throw new EntityAlreadyExistsException("Tag with name " + tagTO.getName() + " already exists");
         }
         return ConvertToTO.tagToTO(newTag);
+
+    }
+
+    @Override
+    public Iterable<TagTO> findTagsBySubstringSortedByWeight(Optional<Boolean> sortedByWeight,
+            Optional<String> substring) {
+        List<Tag> tags = substring.map(tagRepo::findByNameContainsIgnoreCase)
+                .orElse(tagRepo.findAll());
+        if (sortedByWeight.orElse(false)) {
+            tags.sort((tag1, tag2) -> tag2.getProjects().size() - tag1.getProjects().size());
+        }
+        return tags.stream()
+                .map(ConvertToTO::tagToTO)
+                .collect(Collectors.toList());
 
     }
 }
