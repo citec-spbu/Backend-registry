@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
+import org.spburegistry.backend.entity.Project;
+import org.spburegistry.backend.enums.Sort;
 import org.spburegistry.backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,14 +24,17 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @GetMapping("/projects")
-    public List<ProjectTO> getProjectsBetweenDates(
-    @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-    @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
-    ) {
-    return projectService.findProjectsBetweenDates(startDate, endDate);
+    @GetMapping("")
+    public Iterable<ProjectTO> getProjects(
+            @RequestParam(required = false, defaultValue = "") String string_to_search,
+            @RequestParam(required = false, defaultValue = "1990") @DateTimeFormat(pattern = "yyyy") Date startDate,
+            @RequestParam(required = false, defaultValue = "3000") @DateTimeFormat(pattern = "yyyy") Date endDate,
+            @RequestParam(required = false, defaultValue = "NULL") Sort sorting_by_Date,
+            @RequestParam(required = false, defaultValue = "[]") List<String> tags_from_request,
+            @RequestParam(required = false, defaultValue = "[]") List<String> clinics_from_request) {
+        return projectService.getProjects(string_to_search, startDate, endDate, sorting_by_Date, tags_from_request,
+                clinics_from_request);
     }
-
 
     @GetMapping("/project")
     public ProjectTO getProjectById(@RequestParam() Long id) {

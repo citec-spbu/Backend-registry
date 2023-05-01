@@ -9,6 +9,7 @@ import org.spburegistry.backend.entity.Client;
 import org.spburegistry.backend.entity.Clinic;
 import org.spburegistry.backend.entity.Project;
 import org.spburegistry.backend.entity.Tag;
+import org.spburegistry.backend.enums.Sort;
 import org.spburegistry.backend.repository.ClientRepo;
 import org.spburegistry.backend.repository.ClinicRepo;
 import org.spburegistry.backend.repository.ProjectRepo;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,36 +76,39 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectTO> findProjectsBetweenDates(java.util.Date startDate, java.util.Date endDate) {
-        return projectRepo.findProjectsBetweenDates(startDate, endDate).stream().map(ConvertToTO::projectToTO)
-        .collect(Collectors.toList());
+    public Iterable<ProjectTO> getProjects(String string_to_search, Date startDate, Date endDate, Sort sorting_by_Date,
+            List<String> tags_from_request, List<String> clinics_from_request) {
+        // System.out.println(projectRepo.getProjectsByFilters());
+        return projectRepo
+                .getProjects(string_to_search.toLowerCase(), startDate, endDate, tags_from_request,
+                        clinics_from_request, sorting_by_Date.toString())
+                .stream().map(ConvertToTO::projectToTO)
+                .collect(Collectors.toList());
     }
 
     private Set<Tag> getTags(Set<TagTO> tags) {
         return Optional.ofNullable(tags)
-                .map(tagTOS ->
-                        tagTOS.stream().map(tag -> {
-                            if (tag.getTagId() == null) {
-                                Tag newTag = tagRepo.findByNameIgnoreCase(tag.getName());
-                                if (newTag == null) {
-                                    newTag = Tag.builder()
-                                            .name(tag.getName())
-                                            .build();
-                                    tagRepo.save(newTag);
-                                }
-                                return newTag;
-                            }
-                            return tagRepo.getReferenceById(tag.getTagId());
-                        }).collect(Collectors.toSet()))
+                .map(tagTOS -> tagTOS.stream().map(tag -> {
+                    if (tag.getTagId() == null) {
+                        Tag newTag = tagRepo.findByNameIgnoreCase(tag.getName());
+                        if (newTag == null) {
+                            newTag = Tag.builder()
+                                    .name(tag.getName())
+                                    .build();
+                            tagRepo.save(newTag);
+                        }
+                        return newTag;
+                    }
+                    return tagRepo.getReferenceById(tag.getTagId());
+                }).collect(Collectors.toSet()))
                 .orElse(new HashSet<Tag>());
     }
 
     private Set<Clinic> getClinics(Set<Long> clinicsIds) {
         return Optional.ofNullable(clinicsIds)
-                .map(clinics ->
-                        clinics.stream()
-                                .map(clinicRepo::getReferenceById)
-                                .collect(Collectors.toSet()))
+                .map(clinics -> clinics.stream()
+                        .map(clinicRepo::getReferenceById)
+                        .collect(Collectors.toSet()))
                 .orElse(new HashSet<Clinic>());
     }
 
