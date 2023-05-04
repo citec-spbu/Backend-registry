@@ -1,8 +1,13 @@
 package org.spburegistry.backend.controller;
 
+
 import java.util.Date;
 import java.util.List;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.entity.Project;
@@ -10,12 +15,7 @@ import org.spburegistry.backend.enums.Sort;
 import org.spburegistry.backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/data/projects")
 @RestController
@@ -24,7 +24,12 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @GetMapping("")
+    @GetMapping
+    @Operation(description = "Get all projects")
+    @ApiResponse(content = { @Content(
+            mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ProjectTO.class)))
+    })
     public Iterable<ProjectTO> getProjects(
             @RequestParam(required = false, defaultValue = "") String string_to_search,
             @RequestParam(required = false, defaultValue = "1990") @DateTimeFormat(pattern = "yyyy") Date startDate,
@@ -37,11 +42,13 @@ public class ProjectController {
     }
 
     @GetMapping("/project")
+    @Operation(description = "Get project by id")
     public ProjectTO getProjectById(@RequestParam() Long id) {
         return projectService.findById(id);
     }
 
     @PostMapping("/project")
+    @Operation(description = "Add new project")
     public ProjectTO addNewProject(@RequestBody ProjectRequestTO projectRequest) {
         return projectService.addProject(projectRequest);
     }
