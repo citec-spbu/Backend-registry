@@ -26,9 +26,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -142,19 +142,19 @@ public class TagServiceImplTest {
         List<Tag> tags = new ArrayList<>(List.of(
                 Tag.builder()
                         .name("kanal")
-                        .projects(new HashSet<Project>(List.of(Project.builder()
+                        .projects(Set.of(Project.builder()
                                 .name("Lalala")
-                                .build())))
+                                .build()))
                         .build(),
                 Tag.builder()
                         .name("Python")
-                        .projects(new HashSet<Project>(List.of(
+                        .projects(Set.of(
                             Project.builder()
                                 .name("Lalala")
                                 .build(),
                             Project.builder()
                                 .name("Nanana")
-                                .build())))
+                                .build()))
                         .build()));
 
         doReturn(tags).when(tagRepo).findAll();

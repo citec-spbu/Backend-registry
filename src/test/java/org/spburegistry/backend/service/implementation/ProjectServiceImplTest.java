@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
@@ -82,9 +83,9 @@ public class ProjectServiceImplTest {
                 .description("lalal")
                 .requirements("elele")
                 .clientId(1l)
-                .clinicsIds(new HashSet<Long>(List.of(1l)))
-                .tags(new HashSet<TagTO>(List.of(
-                        TagTO.builder().name("Python").build())))
+                .clinicsIds(Set.of(1l))
+                .tags(Set.of(
+                        TagTO.builder().name("Python").build()))
                 .workFormat(WorkFormat.DISTANT)
                 .build();
 
@@ -98,7 +99,7 @@ public class ProjectServiceImplTest {
                 .start(projectRequestTO.getStart())
                 .workFormat(projectRequestTO.getWorkFormat())
                 .client(client)
-                .clinics(new HashSet<Clinic>(List.of(
+                .clinics(Set.of(
                         Clinic.builder()
                                 .name("it")
                                 .link("it.cmo")
@@ -106,8 +107,8 @@ public class ProjectServiceImplTest {
                                         .link("acmp.com")
                                         .name("ПМ-ПУ")
                                         .build())
-                                .build())))
-                .tags(new HashSet<Tag>(List.of(Tag.builder().name("Python").build())))
+                                .build()))
+                .tags(Set.of(Tag.builder().name("Python").build()))
                 .build();
 
         doReturn(Tag.builder().name("Python").build())
@@ -198,8 +199,8 @@ public class ProjectServiceImplTest {
                         .scientificSupervisor("slfdhgkjfg")
                         .resultLink("skdfgdfg.com")
                         .client(client)
-                        .students(new HashSet<Student>(List.of(student)))
-                        .clinics(new HashSet<Clinic>(List.of(clinic)))
+                        .students(Set.of(student))
+                        .clinics(Set.of(clinic))
                         .tags(new HashSet<Tag>(tags))
                         .build(),
                 Project.builder()
@@ -213,8 +214,8 @@ public class ProjectServiceImplTest {
                         .scientificSupervisor("vasya")
                         .resultLink("anim.com")
                         .client(client)
-                        .students(new HashSet<Student>(List.of(student)))
-                        .clinics(new HashSet<Clinic>(List.of(clinic)))
+                        .students(Set.of(student))
+                        .clinics(Set.of(clinic))
                         .tags(new HashSet<Tag>(tags))
                         .build());
 
@@ -285,8 +286,8 @@ public class ProjectServiceImplTest {
                 .scientificSupervisor("vasya")
                 .resultLink("anim.com")
                 .client(client)
-                .students(new HashSet<Student>(List.of(student)))
-                .clinics(new HashSet<Clinic>(List.of(clinic)))
+                .students(Set.of(student))
+                .clinics(Set.of(clinic))
                 .tags(new HashSet<Tag>(tags))
                 .build();
 
