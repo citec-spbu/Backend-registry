@@ -22,9 +22,14 @@
         <tagDatabase tag="v-1.1"/>
     </changeSet>
     
-    <include file="v-1.2_mock/db.changelog-1.2_mock.xml" relativeToChangelogFile="true"/>
-    <changeSet id="32" author="Sergey Vankovich">
-        <tagDatabase tag="v-1.2_mock"/>
+    <include file="v-1.2/db.changelog-1.2.xml" relativeToChangelogFile="true"/>
+    <changeSet id="30" author="Andrey Butusov">
+        <tagDatabase tag="v-1.2"/>
+    </changeSet>
+    
+    <include file="mock/db.changelog-mock.xml" relativeToChangelogFile="true"/>
+    <changeSet id="49" author="Sergey Vankovich">
+        <tagDatabase tag="mock"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -9,6 +9,7 @@ import org.spburegistry.backend.enums.WorkFormat;
 import java.util.Date;
 import java.util.Set;
 
+// you need to delete this file and all references for this file change to ProjectTO
 @Builder
 @Data
 @AllArgsConstructor

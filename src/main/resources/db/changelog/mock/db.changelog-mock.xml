@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="31-changeset-tags-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="32-changeset-users-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="33-changeset-faculties-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="34-changeset-educational_programs-insert-mock.sql"
+             relativeToChangelogFile="true" />
+    <include file="35-changeset-students-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="36-changeset-clients-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="37-changeset-clinics-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="38-changeset-curators-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="39-changeset-supervisors-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="40-changeset-projects-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="41-changeset-links-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="42-changeset-project_student-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="43-changeset-project_clinic-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="44-changeset-project_tag-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="45-changeset-project_curator-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="46-changeset-project_supervisor-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="47-changeset-project_project-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="48-changeset-project_client-insert-mock.sql" relativeToChangelogFile="true" />
+
+</databaseChangeLog>

@@ -53,18 +53,16 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
+    // TODO: with the fields that are in the ProjectTO change this function
+    // TODO: you need make function getCurators, getSupervisors, getLinks, getLinkedProjects
     @Override
     public ProjectTO addProject(ProjectRequestTO projectRequest) {
         Project newProject = Project.builder()
                 .description(projectRequest.getDescription())
-                .end(projectRequest.getEnd())
                 .maxStudents(projectRequest.getMaxStudents())
                 .name(projectRequest.getName())
                 .requirements(projectRequest.getRequirements())
-                .scientificSupervisor(projectRequest.getScientificSupervisor())
-                .start(projectRequest.getStart())
                 .workFormat(projectRequest.getWorkFormat())
-                .client(getClient(projectRequest.getClientId()))
                 .clinics(getClinics(projectRequest.getClinicsIds()))
                 .tags(getTags(projectRequest.getTags()))
                 .build();
@@ -100,10 +98,13 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElse(new HashSet<Clinic>());
     }
 
-    private Client getClient(Long clientId) {
-        return clientRepo.findById(
-                Optional.ofNullable(clientId).orElseThrow(() -> new NoEntityIdException("Client Id is null")))
-                .orElseThrow(() -> new EntityNotFoundException("Client with id " + clientId + " not found"));
+    private Set<Client> getClients(Set<Long> clientIds) {
+        return Optional.ofNullable(clientIds)
+                .map(clients ->
+                        clients.stream()
+                                .map(clientRepo::getReferenceById)
+                                .collect(Collectors.toSet()))
+                .orElse(new HashSet<Client>());
     }
 
 }

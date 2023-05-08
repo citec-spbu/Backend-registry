@@ -12,15 +12,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="clients")
+@Table(name="curators")
 @Data
-public class Client extends BaseEntity {
-    @Column(name = "org_name", nullable = false)
-    private String organizationName;
-
+public class Curator extends BaseEntity {
     @EqualsAndHashCode.Exclude
     @Builder.Default
-    @ManyToMany(mappedBy = "clients")
+    @ManyToMany(mappedBy = "curators")
     private Set<Project> projects = new HashSet<>();
 
     public void addProject(Project project) {

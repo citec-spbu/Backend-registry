@@ -3,6 +3,8 @@ package org.spburegistry.backend.entity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+
+import org.spburegistry.backend.enums.Status;
 import org.spburegistry.backend.enums.WorkFormat;
 
 import java.util.Date;
@@ -27,30 +29,44 @@ public class Project extends BaseEntity {
         @Column(columnDefinition = "text")
         private String requirements;
 
+        @Column(columnDefinition = "text")
+        private String requirements_for_performers;
+
         @Column(name = "work_format", nullable = false)
         @Enumerated(EnumType.STRING)
         private WorkFormat workFormat;
         
         @Column(name = "start_time")
-        private Date start;
-        
-        @Column(name = "end_time")
-        private Date end;
+        private Date start_time;
+
+        @Column(name = "start_filing")
+        private Date start_filing;
+
+        @Column(name = "end_filing")
+        private Date end_filing;
+
+        @Column(name = "start_implementation")
+        private Date start_implementation;
+
+        @Column(name = "end_implementation")
+        private Date end_implementation;
+
+        @Column(name = "start_defense")
+        private Date start_defense;
+
+        @Column(name = "end_defense")
+        private Date end_defense;
         
         @Column(name = "max_students")
         private int maxStudents;
-        
-        @Column(name = "scientific_supervisor")
-        @Nullable
-        private String scientificSupervisor;
+
+        @Column(name = "status", nullable = false)
+        @Enumerated(EnumType.STRING)
+        private Status status;
 
         @Column(name = "result_link")
         @Nullable
         private String resultLink;
-
-        @ManyToOne
-        @JoinColumn(name = "client_id", nullable = false)
-        private Client client;
 
         @EqualsAndHashCode.Exclude
         @Builder.Default
@@ -80,6 +96,46 @@ public class Project extends BaseEntity {
         @Builder.Default
         @ManyToMany(cascade = CascadeType.ALL)
         @JoinTable(
+                name = "project_client", 
+                joinColumns = @JoinColumn(name = "project_id"), 
+                inverseJoinColumns = @JoinColumn(name = "client_id")
+        )
+        private Set<Client> clients = new HashSet<>();
+
+        @EqualsAndHashCode.Exclude
+        @Builder.Default
+        @ManyToMany(cascade = CascadeType.ALL)
+        @JoinTable(
+                name = "project_curator", 
+                joinColumns = @JoinColumn(name = "project_id"), 
+                inverseJoinColumns = @JoinColumn(name = "curator_id")
+        )
+        private Set<Curator> curators = new HashSet<>();
+
+        @EqualsAndHashCode.Exclude
+        @Builder.Default
+        @ManyToMany(cascade = CascadeType.ALL)
+        @JoinTable(
+                name = "project_supervisor", 
+                joinColumns = @JoinColumn(name = "project_id"), 
+                inverseJoinColumns = @JoinColumn(name = "supervisor_id")
+        )
+        private Set<Supervisor> supervisors = new HashSet<>();
+
+        @EqualsAndHashCode.Exclude
+        @Builder.Default
+        @ManyToMany(cascade = CascadeType.ALL)
+        @JoinTable(
+                name = "project_project", 
+                joinColumns = @JoinColumn(name = "first_project_id"), 
+                inverseJoinColumns = @JoinColumn(name = "second_project_id")
+        )
+        private Set<Project> projects = new HashSet<>();
+
+        @EqualsAndHashCode.Exclude
+        @Builder.Default
+        @ManyToMany(cascade = CascadeType.ALL)
+        @JoinTable(
                 name = "project_tag", 
                 joinColumns = @JoinColumn(name = "project_id"), 
                 inverseJoinColumns = @JoinColumn(name = "tag_id")
@@ -94,9 +150,4 @@ public class Project extends BaseEntity {
         @Builder.Default
         @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
         private Set<Link> links = new HashSet<>();
-
-        @Builder.Default
-        @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
-        private Set<Requirement> requirementsForPerformers = new HashSet<>();
-
 }

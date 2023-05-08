@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset Sergey Vankovich:29
+--changeset Sergey Vankovich:42
 insert into project_student (project_id, student_id)
 values (1, 1),
        (1, 2),

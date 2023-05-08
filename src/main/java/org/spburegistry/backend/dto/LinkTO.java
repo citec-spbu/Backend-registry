@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserTO {
-    private Long userId;
-    private String role;
-    private StudentTO student;
-    private ClientTO client;
-    private CuratorTO curator;
-    private SupervisorTO supervisor;
+public class LinkTO {
+    private Long linkId;
+    private String name;
+    private String link;
 }
