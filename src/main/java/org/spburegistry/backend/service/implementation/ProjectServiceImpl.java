@@ -76,12 +76,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Iterable<ProjectTO> getProjects(String string_to_search, Date startDate, Date endDate, Sort sorting_by_Date,
-            List<String> tags_from_request, List<String> clinics_from_request) {
-        // System.out.println(projectRepo.getProjectsByFilters());
+    public Iterable<ProjectTO> getProjects(String stringToSearch, Date startDate, Date endDate, Sort sortingByDate,
+            List<String> tagsFromRequest, List<String> clinicsFromRequest) {
         return projectRepo
-                .getProjects(string_to_search.toLowerCase(), startDate, endDate, tags_from_request,
-                        clinics_from_request, sorting_by_Date.toString())
+                .getProjects(stringToSearch.toLowerCase(), startDate, endDate, tagsFromRequest,
+                        clinicsFromRequest, sortingByDate.toString())
                 .stream().map(ConvertToTO::projectToTO)
                 .collect(Collectors.toList());
     }

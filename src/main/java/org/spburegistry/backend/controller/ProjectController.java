@@ -31,14 +31,14 @@ public class ProjectController {
             array = @ArraySchema(schema = @Schema(implementation = ProjectTO.class)))
     })
     public Iterable<ProjectTO> getProjects(
-            @RequestParam(required = false, defaultValue = "") String string_to_search,
+            @RequestParam(required = false, defaultValue = "") String stringToSearch,
             @RequestParam(required = false, defaultValue = "1990") @DateTimeFormat(pattern = "yyyy") Date startDate,
             @RequestParam(required = false, defaultValue = "3000") @DateTimeFormat(pattern = "yyyy") Date endDate,
-            @RequestParam(required = false, defaultValue = "NULL") Sort sorting_by_Date,
-            @RequestParam(required = false, defaultValue = "[]") List<String> tags_from_request,
-            @RequestParam(required = false, defaultValue = "[]") List<String> clinics_from_request) {
-        return projectService.getProjects(string_to_search, startDate, endDate, sorting_by_Date, tags_from_request,
-                clinics_from_request);
+            @RequestParam(required = false, defaultValue = "NULL") Sort sortingByDate,
+            @RequestParam(required = false, defaultValue = "[]") List<String> tagsFromRequest,
+            @RequestParam(required = false, defaultValue = "[]") List<String> clinicsFromRequest) {
+        return projectService.getProjects(stringToSearch, startDate, endDate, sortingByDate, tagsFromRequest,
+                clinicsFromRequest);
     }
 
     @GetMapping("/project")

@@ -14,6 +14,6 @@ public interface ProjectService {
 
     ProjectTO addProject(ProjectRequestTO project);
 
-    Iterable<ProjectTO> getProjects(String string_to_search, Date startDate, Date endDate,
-            Sort sorting_by_Date, List<String> tags_from_request, List<String> clinics_from_request);
+    Iterable<ProjectTO> getProjects(String stringToSearch, Date startDate, Date endDate,
+            Sort sortingByDate, List<String> tagsFromRequest, List<String> clinicsFromRequest);
 }
