@@ -30,32 +30,32 @@ public class Project extends BaseEntity {
         private String requirements;
 
         @Column(columnDefinition = "text")
-        private String requirements_for_performers;
+        private String requirementsForPerformers;
 
         @Column(name = "work_format", nullable = false)
         @Enumerated(EnumType.STRING)
         private WorkFormat workFormat;
         
         @Column(name = "start_time")
-        private Date start_time;
+        private Date startTime;
 
         @Column(name = "start_filing")
-        private Date start_filing;
+        private Date startFiling;
 
         @Column(name = "end_filing")
-        private Date end_filing;
+        private Date endFiling;
 
         @Column(name = "start_implementation")
-        private Date start_implementation;
+        private Date startImplementation;
 
         @Column(name = "end_implementation")
-        private Date end_implementation;
+        private Date endImplementation;
 
         @Column(name = "start_defense")
-        private Date start_defense;
+        private Date startDefense;
 
         @Column(name = "end_defense")
-        private Date end_defense;
+        private Date endDefense;
         
         @Column(name = "max_students")
         private int maxStudents;
@@ -130,7 +130,7 @@ public class Project extends BaseEntity {
                 joinColumns = @JoinColumn(name = "first_project_id"), 
                 inverseJoinColumns = @JoinColumn(name = "second_project_id")
         )
-        private Set<Project> projects = new HashSet<>();
+        private Set<Project> linkedProjects = new HashSet<>();
 
         @EqualsAndHashCode.Exclude
         @Builder.Default
@@ -147,7 +147,13 @@ public class Project extends BaseEntity {
         @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
         private Set<Commit> commits = new HashSet<>();
 
+        @EqualsAndHashCode.Exclude
         @Builder.Default
         @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
         private Set<Link> links = new HashSet<>();
+
+        @EqualsAndHashCode.Exclude
+        @Builder.Default
+        @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+        private Set<ProjectRole> projectRoles = new HashSet<>();
 }

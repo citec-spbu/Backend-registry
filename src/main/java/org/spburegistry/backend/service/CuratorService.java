@@ -1,10 +1,10 @@
 package org.spburegistry.backend.service;
 
-import org.spburegistry.backend.dto.ClientTO;
+import org.spburegistry.backend.dto.CuratorTO;
 import org.spburegistry.backend.dto.UserTO;
 
-public interface ClientService {
+public interface CuratorService {
     Iterable<UserTO> findAll();
     UserTO findById(Long id);
-    ClientTO addClient(ClientTO userTO); 
+    CuratorTO addCurator(CuratorTO userTO);
 }

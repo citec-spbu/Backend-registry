@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ public class ProjectController {
 
     @PostMapping("/project")
     @Operation(description = "Add new project")
-    public ProjectTO addNewProject(@RequestBody ProjectRequestTO projectRequest) {
+    public ProjectTO addNewProject(@RequestBody ProjectTO projectRequest) {
         return projectService.addProject(projectRequest);
     }
 }

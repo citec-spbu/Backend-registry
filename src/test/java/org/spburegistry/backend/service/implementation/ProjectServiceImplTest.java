@@ -17,7 +17,6 @@ import java.util.Set;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.dto.TagTO;
 import org.spburegistry.backend.entity.Client;
