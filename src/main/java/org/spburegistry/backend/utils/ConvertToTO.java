@@ -6,21 +6,27 @@ import java.util.stream.Collectors;
 import org.spburegistry.backend.dto.ClientTO;
 import org.spburegistry.backend.dto.ClinicTO;
 import org.spburegistry.backend.dto.CommitTO;
+import org.spburegistry.backend.dto.CuratorTO;
 import org.spburegistry.backend.dto.EducationalProgramTO;
 import org.spburegistry.backend.dto.FacultyTO;
+import org.spburegistry.backend.dto.LinkTO;
 import org.spburegistry.backend.dto.ProjectTO;
+import org.spburegistry.backend.dto.RoleTO;
 import org.spburegistry.backend.dto.StudentTO;
+import org.spburegistry.backend.dto.SupervisorTO;
 import org.spburegistry.backend.dto.TagTO;
 import org.spburegistry.backend.dto.UserTO;
 import org.spburegistry.backend.entity.Client;
 import org.spburegistry.backend.entity.Clinic;
 import org.spburegistry.backend.entity.Commit;
+import org.spburegistry.backend.entity.Curator;
 import org.spburegistry.backend.entity.EducationalProgram;
 import org.spburegistry.backend.entity.Faculty;
 import org.spburegistry.backend.entity.Link;
 import org.spburegistry.backend.entity.Project;
-import org.spburegistry.backend.entity.Requirement;
+import org.spburegistry.backend.entity.ProjectRole;
 import org.spburegistry.backend.entity.Student;
+import org.spburegistry.backend.entity.Supervisor;
 import org.spburegistry.backend.entity.Tag;
 import org.spburegistry.backend.entity.User;
 
@@ -53,6 +59,27 @@ public class ConvertToTO {
                 .build();
     }
 
+    public static CuratorTO curatorToTO(Curator curator) {
+        return CuratorTO.builder()
+                .curatorId(curator.getId())
+                .name(curator.getUser().getName())
+                .email(curator.getUser().getEmail())
+                .link(curator.getLink())
+                .phone(curator.getPhone())
+                .build();
+    }
+
+    public static SupervisorTO supervisorToTO(Supervisor supervisor) {
+        return SupervisorTO.builder()
+                .supervisorId(supervisor.getId())
+                .name(supervisor.getUser().getName())
+                .email(supervisor.getUser().getEmail())
+                .link(supervisor.getLink())
+                .phone(supervisor.getPhone())
+                .build();
+    }
+
+
     public static UserTO userToTO(User user) {
         return UserTO.builder()
                 .userId(user.getId())
@@ -60,6 +87,8 @@ public class ConvertToTO {
                 .student((user.getStudent() == null) ? null
                         : ConvertToTO.studentToTO(user.getStudent()))
                 .client((user.getClient() == null) ? null : ConvertToTO.clientToTO(user.getClient()))
+                .curator((user.getCurator() == null) ? null : ConvertToTO.curatorToTO(user.getCurator()))
+                .supervisor((user.getSupervisor() == null) ? null : ConvertToTO.supervisorToTO(user.getSupervisor()))
                 .build();
     }
 
@@ -103,50 +132,82 @@ public class ConvertToTO {
                 .build();
     }
 
+    public static RoleTO roleToTO(ProjectRole projectRole) {
+        return RoleTO.builder()
+                .role(projectRole.getRole())
+                .studentId(projectRole.getStudent().getId())
+                .roleId(projectRole.getId())
+                .projectId(projectRole.getProject().getId())
+                .build();
+    }
+
+    public static LinkTO linkToTO(Link link) {
+        return LinkTO.builder()
+                .linkId(link.getId())
+                .name(link.getName())
+                .link(link.getLink())
+                .projectId(link.getProject().getId())
+                .build();
+    }
+
     public static ProjectTO projectToTO(Project project) {
 
-        Set<ClinicTO> clinics = project.getClinics().stream()
-                .map(ConvertToTO::clinicToTO)
+        Set<Long> clinicsIds = project.getClinics().stream()
+                .map(Clinic::getId)
                 .collect(Collectors.toSet());
 
-        Set<CommitTO> commits = project.getCommits().stream()
-                .map(ConvertToTO::commitToTO)
+        Set<Long> clientsIds = project.getClients().stream()
+                .map(Client::getId)
                 .collect(Collectors.toSet());
 
-        Set<String> links = project.getLinks().stream()
-                .map(Link::getLink)
+        Set<Long> curatorsIds = project.getCurators().stream()
+                .map(Curator::getId)
                 .collect(Collectors.toSet());
 
-        Set<String> requirementsForPerformers = project.getRequirementsForPerformers().stream()
-                .map(Requirement::getRequirement)
+        Set<Long> supervisorsIds = project.getSupervisors().stream()
+                .map(Supervisor::getId)
                 .collect(Collectors.toSet());
 
-        Set<StudentTO> students = project.getStudents().stream()
-                .map(ConvertToTO::studentToTO)
+        Set<LinkTO> links = project.getLinks().stream()
+                .map(ConvertToTO::linkToTO)
                 .collect(Collectors.toSet());
 
         Set<TagTO> tags = project.getTags().stream()
                 .map(ConvertToTO::tagToTO)
                 .collect(Collectors.toSet());
 
+        Set<RoleTO> projectRoles = project.getProjectRoles().stream()
+                .map(ConvertToTO::roleToTO)
+                .collect(Collectors.toSet());
+
+        Set<Long> linkedProjectsIds = project.getLinkedProjects().stream()
+                .map(Project::getId)
+                .collect(Collectors.toSet());
+
         return ProjectTO.builder()
                 .projectId(project.getId())
-                .client(clientToTO(project.getClient()))
-                .clinics(clinics)
-                .commits(commits)
-                .description(project.getDescription())
-                .requirements(project.getRequirements())
-                .end(project.getEnd())
-                .links(links)
-                .maxStudents(project.getMaxStudents())
                 .name(project.getName())
-                .requirementsForPerformers(requirementsForPerformers)
-                .resultLink(project.getResultLink())
-                .scientificSupervisor(project.getScientificSupervisor())
-                .start(project.getStart())
-                .students(students)
                 .tags(tags)
+                .clinicsIds(clinicsIds)
+                .clientsIds(clientsIds)
+                .curatorsIds(curatorsIds)
+                .supervisorIds(supervisorsIds)
+                .description(project.getDescription())
+                .links(links)
+                .projectRoles(projectRoles)
+                .requirements(project.getRequirements())
+                .requirementsForPerformers(project.getRequirementsForPerformers())
+                .startTime(project.getStartTime())
+                .startFiling(project.getStartFiling())
+                .endFiling(project.getEndFiling())
+                .startImplementation(project.getStartImplementation())
+                .endImplementation(project.getEndImplementation())
+                .startDefense(project.getStartDefense())
+                .endDefense(project.getEndDefense())
+                .status(project.getStatus())
+                .linkedProjectsIds(linkedProjectsIds)
                 .workFormat(project.getWorkFormat())
+                .maxStudents(project.getMaxStudents())
                 .build();
     }
 }

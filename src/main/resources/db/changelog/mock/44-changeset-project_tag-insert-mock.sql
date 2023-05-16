@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset Sergey Vankovich:31
+--changeset Sergey Vankovich:44
 insert into project_tag (project_id, tag_id)
 values (1, 1),
        (1, 2),

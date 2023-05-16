@@ -35,7 +35,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public UserTO findById(long id) {
+    public UserTO findById(Long id) {
         return clientRepo.findById(id)
                 .map(Client::getUser)
                 .map(ConvertToTO::userToTO)

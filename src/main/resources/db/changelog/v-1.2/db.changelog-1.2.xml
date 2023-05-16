@@ -1,0 +1,15 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <include file="21-changeset-curators-create_table.sql" relativeToChangelogFile="true" />
+    <include file="22-changeset-supervisors-create_table.sql" relativeToChangelogFile="true" />
+    <include file="23-changeset-project_client-create_table.sql" relativeToChangelogFile="true" />
+    <include file="24-changeset-project_curator-create_table.sql" relativeToChangelogFile="true" />
+    <include file="25-changeset-project_supervisor-create_table.sql" relativeToChangelogFile="true" />
+    <include file="26-changeset-links-update.sql" relativeToChangelogFile="true" />
+    <include file="27-changeset-project-update.sql" relativeToChangelogFile="true" />
+    <include file="28-changeset-performers_requirements-drop.sql" relativeToChangelogFile="true" />
+    <include file="29-changeset-project_project-create_table.sql" relativeToChangelogFile="true" />
+
+</databaseChangeLog>

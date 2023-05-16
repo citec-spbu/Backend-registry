@@ -43,6 +43,7 @@ public class Student extends BaseEntity {
     @OneToMany(mappedBy = "student")
     private Set<Commit> commits = new HashSet<>();
 
+    @EqualsAndHashCode.Exclude
     @Builder.Default
     @OneToMany(mappedBy = "student")
     private Set<ProjectRole> roles = new HashSet<>();

@@ -33,4 +33,14 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     @Nullable
     private Client client;
+
+    @EqualsAndHashCode.Exclude
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    @Nullable
+    private Curator curator;
+
+    @EqualsAndHashCode.Exclude
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    @Nullable
+    private Supervisor supervisor;
 }
