@@ -6,13 +6,17 @@ import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.dto.RoleTO;
 import org.spburegistry.backend.dto.TagTO;
 import org.spburegistry.backend.entity.*;
+import org.spburegistry.backend.enums.Sort;
 import org.spburegistry.backend.repository.*;
+
 import org.spburegistry.backend.service.ProjectService;
 import org.spburegistry.backend.utils.ConvertToTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,6 +98,16 @@ public class ProjectServiceImpl implements ProjectService {
         project.setLinks(saveLinksInProject(projectRequest.getLinks(), project));
         project.setProjectRoles(saveRolesInProject(projectRequest.getProjectRoles(), project));
         return ConvertToTO.projectToTO(projectRepo.save(project));
+    }
+
+    @Override
+    public Iterable<ProjectTO> getProjects(String stringToSearch, Date startDate, Date endDate, Sort sortingByDate,
+            List<String> tagsFromRequest, List<String> clinicsFromRequest) {
+        return projectRepo
+                .getProjects(stringToSearch.toLowerCase(), startDate, endDate, tagsFromRequest,
+                        clinicsFromRequest, sortingByDate.toString())
+                .stream().map(ConvertToTO::projectToTO)
+                .collect(Collectors.toList());
     }
 
     private Set<Tag> getTags(Set<TagTO> tags) {
