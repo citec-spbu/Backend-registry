@@ -79,7 +79,6 @@ public class ConvertToTO {
                 .build();
     }
 
-
     public static UserTO userToTO(User user) {
         return UserTO.builder()
                 .userId(user.getId())
@@ -150,6 +149,13 @@ public class ConvertToTO {
                 .build();
     }
 
+    private static RoleTO getRoleFromStudent(Student student, Long projectId) {
+        return student.getRoles().stream()
+                        .filter(role -> role.getProject().getId() == projectId)
+                        .map(ConvertToTO::roleToTO)
+                        .findFirst().get();
+    }
+
     public static ProjectTO projectToTO(Project project) {
 
         Set<ClinicTO> clinics = project.getClinics().stream()
@@ -176,8 +182,8 @@ public class ConvertToTO {
                 .map(ConvertToTO::tagToTO)
                 .collect(Collectors.toSet());
 
-        Set<RoleTO> projectRoles = project.getProjectRoles().stream()
-                .map(ConvertToTO::roleToTO)
+        Set<RoleTO> projectRoles = project.getStudents().stream()
+                .map(student -> getRoleFromStudent(student, project.getId()))
                 .collect(Collectors.toSet());
 
         Set<Long> linkedProjectsIds = project.getLinkedProjects().stream()
