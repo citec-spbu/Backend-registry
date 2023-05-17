@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset Sergey Vankovich:25
+--changeset Sergey Vankovich:35
 insert into students (creation_time, last_update_time, sex, degree, grade, educational_program_id, user_id)
 values (now(), now(), 'MALE', 'BACHELOR', 3, 1, 1),
        (now(), now(), 'MALE', 'BACHELOR', 2, 1, 2),

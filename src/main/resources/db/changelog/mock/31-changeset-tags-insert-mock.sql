@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset Sergey Vankovich:21
+--changeset Sergey Vankovich:31
 insert into tags (creation_time, last_update_time, name)
           values (now(), now(), 'machine learning'),
                  (now(), now(), 'AI'),
