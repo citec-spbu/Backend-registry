@@ -2,6 +2,7 @@ package org.spburegistry.backend.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.spburegistry.backend.dto.LinkTO;
+import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.dto.RoleTO;
 import org.spburegistry.backend.dto.TagTO;
@@ -67,7 +68,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectTO addProject(ProjectTO projectRequest) {
+    public ProjectTO addProject(ProjectRequestTO projectRequest) {
         Project newProject = Project.builder()
                 .name(projectRequest.getName())
                 .description(projectRequest.getDescription())
@@ -86,7 +87,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .clinics(getClinics(projectRequest.getClinicsIds()))
                 .clients(getClients(projectRequest.getClientsIds()))
                 .curators(getCurators(projectRequest.getCuratorsIds()))
-                .supervisors(getSupervisors(projectRequest.getSupervisorIds()))
+                .supervisors(getSupervisors(projectRequest.getSupervisorsIds()))
                 .linkedProjects(getLinkedProjects(projectRequest.getLinkedProjectsIds()))
                 .tags(getTags(projectRequest.getTags()))
                 .build();

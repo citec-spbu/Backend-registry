@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectTO {
+public class ProjectRequestTO {
     private Long projectId;
     private String name;
     private Set<TagTO> tags;
-    private Set<ClinicTO> clinics;
-    private Set<ClientTO> clients;
-    private Set<CuratorTO> curators;
-    private Set<SupervisorTO> supervisors;
+    private Set<Long> clinicsIds;
+    private Set<Long> clientsIds;
+    private Set<Long> curatorsIds;
+    private Set<Long> supervisorsIds;
     private String description;
     private Set<LinkTO> links;
     private Set<RoleTO> projectRoles;
