@@ -96,6 +96,15 @@ public class ProjectServiceImpl implements ProjectService {
         return ConvertToTO.projectToTO(projectRepo.save(project));
     }
 
+    @Override
+    public Iterable<ProjectTO> findRandomProjects(Optional<Long> limit) {
+        return projectRepo
+                .getRandomProjects(limit.orElse(1L))
+                .stream()
+                .map(ConvertToTO::projectToTO)
+                .collect(Collectors.toList());
+    }
+
     private Set<Tag> getTags(Set<TagTO> tags) {
         return Optional.ofNullable(tags)
                 .map(tagTOS -> tagTOS.stream()

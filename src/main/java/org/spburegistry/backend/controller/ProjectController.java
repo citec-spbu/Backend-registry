@@ -10,6 +10,8 @@ import org.spburegistry.backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RequestMapping("/data/projects")
 @RestController
 public class ProjectController {
@@ -19,12 +21,22 @@ public class ProjectController {
 
     @GetMapping
     @Operation(description = "Get all projects")
-    @ApiResponse(content = { @Content(
+    @ApiResponse(content = {@Content(
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = ProjectTO.class)))
     })
     public Iterable<ProjectTO> getAllProjects() {
         return projectService.findAll();
+    }
+
+    @GetMapping("/random")
+    @Operation(description = "Get n random projects (by default n = 1)")
+    @ApiResponse(content = {@Content(
+            mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = ProjectTO.class)))
+    })
+    public Iterable<ProjectTO> getRandomProjects(@RequestParam("limit") Optional<Long> limit) {
+        return projectService.findRandomProjects(limit);
     }
 
     @GetMapping("/project")
