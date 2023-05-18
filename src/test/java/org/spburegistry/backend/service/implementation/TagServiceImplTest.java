@@ -1,14 +1,6 @@
 package org.spburegistry.backend.service.implementation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
+import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import jakarta.persistence.EntityNotFoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -76,7 +69,7 @@ public class TagServiceImplTest {
 
         doReturn(tags).when(tagRepo).findAll();
 
-        Iterable<TagTO> tagsFromService = tagService.findTagsBySubstringSortedByWeight(Optional.empty(), Optional.empty());
+        Iterable<TagTO> tagsFromService = tagService.findTagsByParameters(Optional.empty(), Optional.empty(), Optional.empty());
 
         assertNotNull(tagsFromService);
         assertEquals(tags.get(0).getName(), tagsFromService.iterator().next().getName());
@@ -88,25 +81,25 @@ public class TagServiceImplTest {
     void testFindTagById() {
         Optional<Tag> tag = Optional.of(Tag.builder().name("Python").build());
 
-        doReturn(tag).when(tagRepo).findById(1l);
+        doReturn(tag).when(tagRepo).findById(1L);
 
-        TagTO tagFromService = tagService.findTagById(1l);
+        TagTO tagFromService = tagService.findTagById(1L);
 
         assertNotNull(tagFromService);
         assertEquals(tag.get().getName(), tagFromService.getName());
 
-        verify(tagRepo, times(1)).findById(1l);
+        verify(tagRepo, times(1)).findById(1L);
     }
 
     @Test
     void testFindTagById_Fail() {
-        doReturn(Optional.empty()).when(tagRepo).findById(1l);
+        doReturn(Optional.empty()).when(tagRepo).findById(1L);
 
         EntityNotFoundException thrown = assertThrows(EntityNotFoundException.class,
-                () -> tagService.findTagById(1l));
-        assertEquals(thrown.getMessage(), "Tag with id " + 1l + " not found");
+                () -> tagService.findTagById(1L));
+        assertEquals(thrown.getMessage(), "Tag with id " + 1L + " not found");
 
-        verify(tagRepo, times(1)).findById(1l);
+        verify(tagRepo, times(1)).findById(1L);
     }
 
     @Test
@@ -116,7 +109,7 @@ public class TagServiceImplTest {
 
         doReturn(tag).when(tagRepo).findByNameContainsIgnoreCase("Py");
 
-        Iterable<TagTO> tagFromService = tagService.findTagsBySubstringSortedByWeight(Optional.empty(), Optional.of("Py"));
+        Iterable<TagTO> tagFromService = tagService.findTagsByParameters(Optional.empty(), Optional.of("Py"), Optional.empty());
 
         assertNotNull(tagFromService);
         assertTrue(tagFromService.iterator().hasNext());
@@ -129,7 +122,7 @@ public class TagServiceImplTest {
     void testFindTagBySubstring_Fail() {
         doReturn(new ArrayList<Tag>()).when(tagRepo).findByNameContainsIgnoreCase("Py");
 
-        Iterable<TagTO> tagFromService = tagService.findTagsBySubstringSortedByWeight(Optional.empty(), Optional.of("Py"));
+        Iterable<TagTO> tagFromService = tagService.findTagsByParameters(Optional.empty(), Optional.of("Py"), Optional.empty());
 
         assertNotNull(tagFromService);
         assertFalse(tagFromService.iterator().hasNext());
@@ -159,7 +152,7 @@ public class TagServiceImplTest {
 
         doReturn(tags).when(tagRepo).findAll();
 
-        Iterable<TagTO> tagsFromService = tagService.findTagsBySubstringSortedByWeight(Optional.of(true), Optional.empty());
+        Iterable<TagTO> tagsFromService = tagService.findTagsByParameters(Optional.of(true), Optional.empty(), Optional.empty());
 
         assertNotNull(tagsFromService);
         assertTrue(tagsFromService.iterator().hasNext());
@@ -173,7 +166,7 @@ public class TagServiceImplTest {
     void testFindTagSortByWeight_Fail() {
         doReturn(new ArrayList<Tag>()).when(tagRepo).findAll();
 
-        Iterable<TagTO> tagFromService = tagService.findTagsBySubstringSortedByWeight(Optional.of(true), Optional.empty());
+        Iterable<TagTO> tagFromService = tagService.findTagsByParameters(Optional.of(true), Optional.empty(), Optional.empty());
 
         assertNotNull(tagFromService);
         assertFalse(tagFromService.iterator().hasNext());

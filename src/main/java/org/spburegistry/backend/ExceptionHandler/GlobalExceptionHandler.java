@@ -1,18 +1,16 @@
 package org.spburegistry.backend.ExceptionHandler;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.spburegistry.backend.ExceptionHandler.error.AppError;
+import org.spburegistry.backend.ExceptionHandler.exception.EntityAlreadyExistsException;
+import org.spburegistry.backend.ExceptionHandler.exception.NegativeLimitException;
+import org.spburegistry.backend.ExceptionHandler.exception.NoEntityIdException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import jakarta.persistence.EntityNotFoundException;
-
-import org.spburegistry.backend.ExceptionHandler.exception.EntityAlreadyExistsException;
-import org.spburegistry.backend.ExceptionHandler.exception.NoEntityIdException;
-
-import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
 @Slf4j
@@ -39,6 +37,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<AppError> catchSQLException(DataIntegrityViolationException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "PLACEHOLDER#SQL operation exception"), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<AppError> catchNegativeLimitException(NegativeLimitException e) {
+        log.error(e.getMessage(), e);
+        return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
