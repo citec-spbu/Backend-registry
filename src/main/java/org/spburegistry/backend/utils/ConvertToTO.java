@@ -134,7 +134,7 @@ public class ConvertToTO {
     public static RoleTO roleToTO(ProjectRole projectRole) {
         return RoleTO.builder()
                 .role(projectRole.getRole())
-                .studentId(projectRole.getStudent().getId())
+                .student(studentToTO(projectRole.getStudent()))
                 .roleId(projectRole.getId())
                 .projectId(projectRole.getProject().getId())
                 .build();

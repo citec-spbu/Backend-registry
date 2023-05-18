@@ -14,7 +14,7 @@ public class RoleTO {
 
     private String role;
 
-    private Long studentId;
+    private StudentTO student;
 
     private Long projectId;
 }

@@ -155,7 +155,7 @@ public class ProjectServiceImpl implements ProjectService {
     private Set<Student> getStudents(Set<RoleTO> projectRolesTO) {
         return Optional.ofNullable(projectRolesTO)
                 .map(roles -> roles.stream()
-                        .map(role -> studentRepo.getReferenceById(role.getStudentId()))
+                        .map(role -> studentRepo.getReferenceById(role.getStudent().getStudentId()))
                         .collect(Collectors.toSet()))
                 .orElse(new HashSet<>());
     }
@@ -178,7 +178,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private ProjectRole createProjectRole(Project project, RoleTO role) {
-        Student student = studentRepo.getReferenceById(role.getStudentId());
+        Student student = studentRepo.getReferenceById(role.getStudent().getStudentId());
         return ProjectRole.builder()
                 .project(project)
                 .role(role.getRole())
