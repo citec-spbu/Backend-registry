@@ -79,7 +79,6 @@ public class ConvertToTO {
                 .build();
     }
 
-
     public static UserTO userToTO(User user) {
         return UserTO.builder()
                 .userId(user.getId())
@@ -135,7 +134,7 @@ public class ConvertToTO {
     public static RoleTO roleToTO(ProjectRole projectRole) {
         return RoleTO.builder()
                 .role(projectRole.getRole())
-                .studentId(projectRole.getStudent().getId())
+                .student(studentToTO(projectRole.getStudent()))
                 .roleId(projectRole.getId())
                 .projectId(projectRole.getProject().getId())
                 .build();
@@ -150,22 +149,29 @@ public class ConvertToTO {
                 .build();
     }
 
+    private static RoleTO getRoleFromStudent(Student student, Long projectId) {
+        return student.getRoles().stream()
+                        .filter(role -> role.getProject().getId() == projectId)
+                        .map(ConvertToTO::roleToTO)
+                        .findFirst().get();
+    }
+
     public static ProjectTO projectToTO(Project project) {
 
-        Set<Long> clinicsIds = project.getClinics().stream()
-                .map(Clinic::getId)
+        Set<ClinicTO> clinics = project.getClinics().stream()
+                .map(ConvertToTO::clinicToTO)
                 .collect(Collectors.toSet());
 
-        Set<Long> clientsIds = project.getClients().stream()
-                .map(Client::getId)
+        Set<ClientTO> clients = project.getClients().stream()
+                .map(ConvertToTO::clientToTO)
                 .collect(Collectors.toSet());
 
-        Set<Long> curatorsIds = project.getCurators().stream()
-                .map(Curator::getId)
+        Set<CuratorTO> curators = project.getCurators().stream()
+                .map(ConvertToTO::curatorToTO)
                 .collect(Collectors.toSet());
 
-        Set<Long> supervisorsIds = project.getSupervisors().stream()
-                .map(Supervisor::getId)
+        Set<SupervisorTO> supervisors = project.getSupervisors().stream()
+                .map(ConvertToTO::supervisorToTO)
                 .collect(Collectors.toSet());
 
         Set<LinkTO> links = project.getLinks().stream()
@@ -176,8 +182,8 @@ public class ConvertToTO {
                 .map(ConvertToTO::tagToTO)
                 .collect(Collectors.toSet());
 
-        Set<RoleTO> projectRoles = project.getProjectRoles().stream()
-                .map(ConvertToTO::roleToTO)
+        Set<RoleTO> projectRoles = project.getStudents().stream()
+                .map(student -> getRoleFromStudent(student, project.getId()))
                 .collect(Collectors.toSet());
 
         Set<Long> linkedProjectsIds = project.getLinkedProjects().stream()
@@ -188,10 +194,10 @@ public class ConvertToTO {
                 .projectId(project.getId())
                 .name(project.getName())
                 .tags(tags)
-                .clinicsIds(clinicsIds)
-                .clientsIds(clientsIds)
-                .curatorsIds(curatorsIds)
-                .supervisorIds(supervisorsIds)
+                .clinics(clinics)
+                .clients(clients)
+                .curators(curators)
+                .supervisors(supervisors)
                 .description(project.getDescription())
                 .links(links)
                 .projectRoles(projectRoles)
