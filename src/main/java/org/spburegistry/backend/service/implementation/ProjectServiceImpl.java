@@ -2,6 +2,7 @@ package org.spburegistry.backend.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.spburegistry.backend.dto.LinkTO;
+import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.dto.RoleTO;
 import org.spburegistry.backend.dto.TagTO;
@@ -67,7 +68,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectTO addProject(ProjectTO projectRequest) {
+    public ProjectTO addProject(ProjectRequestTO projectRequest) {
         Project newProject = Project.builder()
                 .name(projectRequest.getName())
                 .description(projectRequest.getDescription())
@@ -86,7 +87,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .clinics(getClinics(projectRequest.getClinicsIds()))
                 .clients(getClients(projectRequest.getClientsIds()))
                 .curators(getCurators(projectRequest.getCuratorsIds()))
-                .supervisors(getSupervisors(projectRequest.getSupervisorIds()))
+                .supervisors(getSupervisors(projectRequest.getSupervisorsIds()))
                 .linkedProjects(getLinkedProjects(projectRequest.getLinkedProjectsIds()))
                 .tags(getTags(projectRequest.getTags()))
                 .build();
@@ -154,7 +155,7 @@ public class ProjectServiceImpl implements ProjectService {
     private Set<Student> getStudents(Set<RoleTO> projectRolesTO) {
         return Optional.ofNullable(projectRolesTO)
                 .map(roles -> roles.stream()
-                        .map(role -> studentRepo.getReferenceById(role.getStudentId()))
+                        .map(role -> studentRepo.getReferenceById(role.getStudent().getStudentId()))
                         .collect(Collectors.toSet()))
                 .orElse(new HashSet<>());
     }
@@ -177,7 +178,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private ProjectRole createProjectRole(Project project, RoleTO role) {
-        Student student = studentRepo.getReferenceById(role.getStudentId());
+        Student student = studentRepo.getReferenceById(role.getStudent().getStudentId());
         return ProjectRole.builder()
                 .project(project)
                 .role(role.getRole())

@@ -23,5 +23,6 @@
     <include file="46-changeset-project_supervisor-insert-mock.sql" relativeToChangelogFile="true" />
     <include file="47-changeset-project_project-insert-mock.sql" relativeToChangelogFile="true" />
     <include file="48-changeset-project_client-insert-mock.sql" relativeToChangelogFile="true" />
+    <include file="49-changeset-roles_in_projects-insert-mock.sql" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
