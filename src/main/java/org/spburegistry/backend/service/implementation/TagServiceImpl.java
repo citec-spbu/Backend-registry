@@ -1,9 +1,6 @@
 package org.spburegistry.backend.service.implementation;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import jakarta.persistence.EntityNotFoundException;
 import org.spburegistry.backend.ExceptionHandler.exception.EntityAlreadyExistsException;
 import org.spburegistry.backend.dto.TagTO;
 import org.spburegistry.backend.entity.Tag;
@@ -11,9 +8,14 @@ import org.spburegistry.backend.repository.TagRepo;
 import org.spburegistry.backend.service.TagService;
 import org.spburegistry.backend.utils.ConvertToTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.spburegistry.backend.utils.Utils.checkLimit;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -47,16 +49,28 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Iterable<TagTO> findTagsBySubstringSortedByWeight(Optional<Boolean> sortedByWeight,
-            Optional<String> substring) {
-        List<Tag> tags = substring.map(tagRepo::findByNameContainsIgnoreCase)
-                .orElse(tagRepo.findAll());
+    public Iterable<TagTO> findTagsByParameters(Optional<Boolean> sortedByWeight,
+                                                Optional<String> substring,
+                                                Optional<Integer> limit) {
+        List<Tag> tags;
+        if (substring.isPresent() && limit.isPresent()) {
+            checkLimit(limit.get());
+            tags = tagRepo.findByNameContainsIgnoreCase(substring.get(), PageRequest.of(0, limit.get()));
+        } else if (substring.isPresent()) {
+            tags = tagRepo.findByNameContainsIgnoreCase(substring.get());
+        } else
+            tags = limit
+                    .map(lim -> {
+                        checkLimit(lim);
+                        return tagRepo.findAll(PageRequest.of(0, lim)).stream().toList();
+                    })
+                    .orElseGet(tagRepo::findAll);
+
         if (sortedByWeight.orElse(false)) {
             tags.sort((tag1, tag2) -> tag2.getProjects().size() - tag1.getProjects().size());
         }
         return tags.stream()
                 .map(ConvertToTO::tagToTO)
                 .collect(Collectors.toList());
-
     }
 }

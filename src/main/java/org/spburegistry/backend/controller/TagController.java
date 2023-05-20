@@ -21,14 +21,15 @@ public class TagController {
 
     @GetMapping
     @Operation(description = "Get all tags with applied filters and sorting")
-    @ApiResponse(content = { @Content(
+    @ApiResponse(content = {@Content(
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = TagTO.class)))
     })
     public Iterable<TagTO> getTagsBySubstringSortedByWeight(
             @RequestParam("sortedByWeight") Optional<Boolean> sortedByWeight,
-            @RequestParam("substring") Optional<String> substring) {
-        return tagService.findTagsBySubstringSortedByWeight(sortedByWeight, substring);
+            @RequestParam("substring") Optional<String> substring,
+            @RequestParam("limit") Optional<Integer> limit) {
+        return tagService.findTagsByParameters(sortedByWeight, substring, limit);
     }
 
     @GetMapping("/tag/id/{id}")
