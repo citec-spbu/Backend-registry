@@ -6,7 +6,7 @@ public class Utils {
     private Utils() {
     }
 
-    public static void checkLimit(Integer lim) {
+    public static void checkLimit(long lim) {
         if (lim < 0) {
             throw new NegativeLimitException("Limit has to be positive, actual limit is " + lim);
         }
