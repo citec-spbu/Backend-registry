@@ -1,11 +1,7 @@
 package org.spburegistry.backend.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.spburegistry.backend.dto.LinkTO;
-import org.spburegistry.backend.dto.ProjectRequestTO;
-import org.spburegistry.backend.dto.ProjectTO;
-import org.spburegistry.backend.dto.RoleTO;
-import org.spburegistry.backend.dto.TagTO;
+import org.spburegistry.backend.dto.*;
 import org.spburegistry.backend.entity.*;
 import org.spburegistry.backend.repository.*;
 import org.spburegistry.backend.service.ProjectService;
@@ -81,6 +77,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .startImplementation(projectRequest.getStartImplementation())
                 .endImplementation(projectRequest.getEndImplementation())
                 .startDefense(projectRequest.getStartDefense())
+                .endDefense(projectRequest.getEndDefense())
                 .maxStudents(projectRequest.getMaxStudents())
                 .status(projectRequest.getStatus())
                 .students(getStudents(projectRequest.getProjectRoles()))
@@ -104,6 +101,93 @@ public class ProjectServiceImpl implements ProjectService {
                 .stream()
                 .map(ConvertToTO::projectToTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProjectTO updateProject(ProjectRequestTO projectRequestTO) {
+        Project project = projectRepo.findById(projectRequestTO.getProjectId()).orElseThrow(
+                () -> new EntityNotFoundException("Project with id " + projectRequestTO.getProjectId() + " not found")
+        );
+
+        project.compareAndSetName(projectRequestTO.getName());
+        project.compareAndSetDescription(projectRequestTO.getDescription());
+        project.compareAndSetRequirements(projectRequestTO.getRequirements());
+        project.compareAndSetRequirementsForPerformers(projectRequestTO.getRequirementsForPerformers());
+        project.compareAndSetStartTime(projectRequestTO.getStartTime());
+        project.compareAndSetStartFiling(projectRequestTO.getStartFiling());
+        project.compareAndSetEndFiling(projectRequestTO.getEndFiling());
+        project.compareAndSetStartImplementation(projectRequestTO.getStartImplementation());
+        project.compareAndSetEndImplementation(projectRequestTO.getEndImplementation());
+        project.compareAndSetStartDefense(projectRequestTO.getStartDefense());
+        project.compareAndSetEndDefense(projectRequestTO.getEndDefense());
+        project.compareAndSetStatus(projectRequestTO.getStatus());
+        project.compareAndSetWorkFormat(projectRequestTO.getWorkFormat());
+        project.compareAndSetMaxStudents(project.getMaxStudents());
+
+        updateProjectTags(project, projectRequestTO.getTags());
+        updateProjectClinics(project, projectRequestTO.getClinicsIds());
+        updateProjectClients(project, projectRequestTO.getClientsIds());
+        updateProjectCurators(project, projectRequestTO.getCuratorsIds());
+        updateProjectSupervisors(project, projectRequestTO.getSupervisorsIds());
+        updateProjectStudents(project, projectRequestTO.getProjectRoles());
+        updateLinkingProjectIds(project, projectRequestTO.getLinkedProjectsIds());
+
+        updateProjectLinks(project, projectRequestTO.getLinks());
+        updateProjectRoles(project, projectRequestTO.getProjectRoles());
+        return ConvertToTO.projectToTO(projectRepo.save(project));
+    }
+
+
+    private void updateLinkingProjectIds(Project project, Set<Long> linkedProjectsIds) {
+        project.setLinkedProjects(getLinkedProjects(linkedProjectsIds));
+    }
+
+    private void updateProjectTags(Project project, Set<TagTO> tags) {
+        project.setTags(getTags(tags));
+    }
+
+    private void updateProjectClinics(Project project, Set<Long> clinicsIds) {
+        project.setClinics(getClinics(clinicsIds));
+    }
+
+    private void updateProjectClients(Project project, Set<Long> clientsIds) {
+        project.setClients(getClients(clientsIds));
+    }
+
+    private void updateProjectCurators(Project project, Set<Long> curatorsIds) {
+        project.setCurators(getCurators(curatorsIds));
+    }
+
+    private void updateProjectSupervisors(Project project, Set<Long> supervisorsIds) {
+        project.setSupervisors(getSupervisors(supervisorsIds));
+    }
+
+    private void updateProjectStudents(Project project, Set<RoleTO> projectRoles) {
+        project.setStudents(getStudents(projectRoles));
+    }
+
+    private void updateProjectLinks(Project project, Set<LinkTO> links) {
+        project.setLinks(links.stream()
+                .map(link -> getOrCreateLink(link, project))
+                .collect(Collectors.toSet()));
+    }
+
+    private Link getOrCreateLink(LinkTO link, Project project) {
+        return Optional.ofNullable(link.getLinkId())
+                .flatMap(linkRepo::findById)
+                .orElse(createLink(link, project));
+    }
+
+    private void updateProjectRoles(Project project, Set<RoleTO> projectRoles) {
+        project.setProjectRoles(projectRoles.stream()
+                .map(role -> getOrCreateProjectRole(role, project))
+                .collect(Collectors.toSet()));
+    }
+
+    private ProjectRole getOrCreateProjectRole(RoleTO role, Project project) {
+        return Optional.ofNullable(role.getRoleId())
+                .flatMap(projectRoleRepo::findById)
+                .orElse(createProjectRole(project, role));
     }
 
     private Set<Tag> getTags(Set<TagTO> tags) {

@@ -3,13 +3,15 @@ package org.spburegistry.backend.entity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-
 import org.spburegistry.backend.enums.Status;
 import org.spburegistry.backend.enums.WorkFormat;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @EqualsAndHashCode(callSuper = false)
 @Builder
@@ -156,4 +158,68 @@ public class Project extends BaseEntity {
         @Builder.Default
         @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
         private Set<ProjectRole> projectRoles = new HashSet<>();
+
+        private <T> void compareAndSet(Supplier<T> getter, Consumer<T> setter, T value) {
+                if (!Objects.equals(getter.get(), value)) {
+                        setter.accept(value);
+                }
+        }
+
+        public void compareAndSetName(String name) {
+                compareAndSet(this::getName, this::setName, name);
+        }
+
+        public void compareAndSetDescription(String description) {
+                compareAndSet(this::getDescription, this::setDescription, description);
+        }
+
+        public void compareAndSetRequirements(String requirements) {
+                compareAndSet(this::getRequirements, this::setRequirements, requirements);
+        }
+
+        public void compareAndSetRequirementsForPerformers(String requirementsForPerformers) {
+                compareAndSet(this::getRequirementsForPerformers, this::setRequirementsForPerformers, requirementsForPerformers);
+        }
+
+        public void compareAndSetStartTime(Date startTime) {
+                compareAndSet(this::getStartTime, this::setStartTime, startTime);
+        }
+
+        public void compareAndSetStartFiling(Date startFiling) {
+                compareAndSet(this::getStartFiling, this::setStartFiling, startFiling);
+        }
+
+        public void compareAndSetEndFiling(Date endFiling) {
+                compareAndSet(this::getEndFiling, this::setEndFiling, endFiling);
+        }
+
+        public void compareAndSetStartImplementation(Date startImplementation) {
+                compareAndSet(this::getStartImplementation, this::setStartImplementation, startImplementation);
+        }
+
+        public void compareAndSetEndImplementation(Date endImplementation) {
+                compareAndSet(this::getEndImplementation, this::setEndImplementation, endImplementation);
+        }
+
+        public void compareAndSetStartDefense(Date startDefense) {
+                compareAndSet(this::getStartDefense, this::setStartDefense, startDefense);
+        }
+
+        public void compareAndSetEndDefense(Date endDefense) {
+                compareAndSet(this::getEndDefense, this::setEndDefense, endDefense);
+        }
+
+        public void compareAndSetStatus(Status status) {
+                compareAndSet(this::getStatus, this::setStatus, status);
+        }
+
+        public void compareAndSetWorkFormat(WorkFormat workFormat) {
+                compareAndSet(this::getWorkFormat, this::setWorkFormat, workFormat);
+        }
+
+        public void compareAndSetMaxStudents(int maxStudents) {
+                compareAndSet(this::getMaxStudents, this::setMaxStudents, maxStudents);
+        }
+
+
 }
