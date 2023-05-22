@@ -1,11 +1,7 @@
 package org.spburegistry.backend.service.implementation;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.spburegistry.backend.dto.LinkTO;
-import org.spburegistry.backend.dto.ProjectRequestTO;
-import org.spburegistry.backend.dto.ProjectTO;
-import org.spburegistry.backend.dto.RoleTO;
-import org.spburegistry.backend.dto.TagTO;
+import org.spburegistry.backend.dto.*;
 import org.spburegistry.backend.entity.*;
 import org.spburegistry.backend.repository.*;
 import org.spburegistry.backend.service.ProjectService;
@@ -17,6 +13,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.spburegistry.backend.utils.Utils.checkLimit;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -99,8 +97,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Iterable<ProjectTO> findRandomProjects(Optional<Long> limit) {
+        long lim = limit.orElse(1L);
+        checkLimit(lim);
         return projectRepo
-                .getRandomProjects(limit.orElse(1L))
+                .getRandomProjects(lim)
                 .stream()
                 .map(ConvertToTO::projectToTO)
                 .collect(Collectors.toList());
