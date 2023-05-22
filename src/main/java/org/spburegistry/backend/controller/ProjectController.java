@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 import org.spburegistry.backend.dto.ProjectRequestTO;
 import org.spburegistry.backend.dto.ProjectTO;
 import org.spburegistry.backend.service.ProjectService;
@@ -51,5 +50,11 @@ public class ProjectController {
     @Operation(description = "Add new project")
     public ProjectTO addNewProject(@RequestBody ProjectRequestTO projectRequest) {
         return projectService.addProject(projectRequest);
+    }
+
+    @PutMapping("/project")
+    @Operation(description = "Update existing project")
+    public ProjectTO updateProject(@RequestBody ProjectRequestTO projectRequestTO) {
+        return projectService.updateProject(projectRequestTO);
     }
 }
