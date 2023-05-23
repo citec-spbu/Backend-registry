@@ -15,7 +15,7 @@ public class ProjectRole extends BaseEntity {
     @Column(nullable = false)
     private String role;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 

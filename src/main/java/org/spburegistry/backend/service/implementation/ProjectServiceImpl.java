@@ -3,6 +3,8 @@ package org.spburegistry.backend.service.implementation;
 import jakarta.persistence.EntityNotFoundException;
 import org.spburegistry.backend.dto.*;
 import org.spburegistry.backend.entity.*;
+import org.spburegistry.backend.enums.Status;
+import org.spburegistry.backend.enums.WorkFormat;
 import org.spburegistry.backend.repository.*;
 import org.spburegistry.backend.service.ProjectService;
 import org.spburegistry.backend.utils.ConvertToTO;
@@ -66,6 +68,16 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public ProjectTO addEmptyProject() {
+        return ConvertToTO.projectToTO(projectRepo.save(Project.builder()
+                .description("")
+                .name("")
+                .workFormat(WorkFormat.empty)
+                .status(Status.empty)
+                .build()));
+    }
+
+    @Override
     public ProjectTO addProject(ProjectRequestTO projectRequest) {
         Project newProject = Project.builder()
                 .name(projectRequest.getName())
@@ -110,8 +122,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectTO updateProject(ProjectRequestTO projectRequestTO) {
         Project project = projectRepo.findById(projectRequestTO.getProjectId()).orElseThrow(
-                () -> new EntityNotFoundException("Project with id " + projectRequestTO.getProjectId() + " not found")
-        );
+                () -> new EntityNotFoundException("Project with id " + projectRequestTO.getProjectId() + " not found"));
 
         project.compareAndSetName(projectRequestTO.getName());
         project.compareAndSetDescription(projectRequestTO.getDescription());
@@ -140,7 +151,6 @@ public class ProjectServiceImpl implements ProjectService {
         updateProjectRoles(project, projectRequestTO.getProjectRoles());
         return ConvertToTO.projectToTO(projectRepo.save(project));
     }
-
 
     private void updateLinkingProjectIds(Project project, Set<Long> linkedProjectsIds) {
         project.setLinkedProjects(getLinkedProjects(linkedProjectsIds));
@@ -300,4 +310,10 @@ public class ProjectServiceImpl implements ProjectService {
                 .build();
     }
 
+    @Override
+    public void deleteProject(Long id) {
+        Project project = projectRepo.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Project with id " + id + " not found"));
+        projectRepo.delete(project);
+    }
 }

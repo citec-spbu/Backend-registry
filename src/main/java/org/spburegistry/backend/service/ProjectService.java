@@ -12,7 +12,11 @@ public interface ProjectService {
 
     ProjectTO addProject(ProjectRequestTO project);
 
+    ProjectTO addEmptyProject();
+
     Iterable<ProjectTO> findRandomProjects(Optional<Long> limit);
 
     ProjectTO updateProject(ProjectRequestTO projectRequestTO);
+
+    void deleteProject(Long id);
 }

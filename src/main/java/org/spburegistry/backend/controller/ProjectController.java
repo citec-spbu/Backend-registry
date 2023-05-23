@@ -52,9 +52,21 @@ public class ProjectController {
         return projectService.addProject(projectRequest);
     }
 
+    @PostMapping("/project/empty")
+    @Operation(description = "Add empty project")
+    public ProjectTO addEmptyProject() {
+        return projectService.addEmptyProject();
+    }
+
     @PutMapping("/project")
     @Operation(description = "Update existing project")
     public ProjectTO updateProject(@RequestBody ProjectRequestTO projectRequestTO) {
         return projectService.updateProject(projectRequestTO);
+    }
+
+    @DeleteMapping("/project")
+    @Operation(description = "Delete project by id")
+    public void deleteProject(@RequestParam Long id) {
+        projectService.deleteProject(id);
     }
 }
