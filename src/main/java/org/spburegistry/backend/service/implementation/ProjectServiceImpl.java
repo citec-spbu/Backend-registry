@@ -229,6 +229,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(roleTO -> {
                     Optional<ProjectRole> role = projectRoleRepo.findById(roleTO.getRoleId());
                     role.ifPresent(theRole -> {
+                        theRole.setStudent(studentRepo.getReferenceById(roleTO.getStudent().getStudentId()));
                         theRole.setRole(roleTO.getRole());
                         projectRoleRepo.save(theRole);
                     });
