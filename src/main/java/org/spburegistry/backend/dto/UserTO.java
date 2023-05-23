@@ -1,5 +1,7 @@
 package org.spburegistry.backend.dto;
 
+import org.spburegistry.backend.enums.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserTO {
     private Long userId;
-    private String role;
+    private Role role;
     private StudentTO student;
     private ClientTO client;
     private CuratorTO curator;

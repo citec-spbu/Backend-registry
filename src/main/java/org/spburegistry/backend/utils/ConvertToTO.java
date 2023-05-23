@@ -82,7 +82,7 @@ public class ConvertToTO {
     public static UserTO userToTO(User user) {
         return UserTO.builder()
                 .userId(user.getId())
-                .role(user.getRole().name())
+                .role(user.getRole())
                 .student((user.getStudent() == null) ? null
                         : ConvertToTO.studentToTO(user.getStudent()))
                 .client((user.getClient() == null) ? null : ConvertToTO.clientToTO(user.getClient()))
@@ -124,8 +124,8 @@ public class ConvertToTO {
                 .studentId(student.getId())
                 .name(student.getUser().getName())
                 .email(student.getUser().getEmail())
-                .degree(student.getDegree().name())
-                .sex(student.getSex().name())
+                .degree(student.getDegree())
+                .sex(student.getSex())
                 .grade(student.getGrade())
                 .educationalProgram(educationalProgramToTO(student.getEducationalProgram()))
                 .build();

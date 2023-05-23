@@ -9,8 +9,6 @@ import org.spburegistry.backend.dto.StudentTO;
 import org.spburegistry.backend.dto.UserTO;
 import org.spburegistry.backend.entity.EducationalProgram;
 import org.spburegistry.backend.entity.Student;
-import org.spburegistry.backend.enums.Degree;
-import org.spburegistry.backend.enums.Sex;
 import org.spburegistry.backend.repository.EducationalProgramRepo;
 import org.spburegistry.backend.repository.StudentRepo;
 import org.spburegistry.backend.service.StudentService;
@@ -56,8 +54,8 @@ public class StudentServiceImpl implements StudentService {
         return ConvertToTO.studentToTO(
                 studentRepo.save(
                         Student.builder()
-                                .sex(Sex.valueOf(userTO.getSex()))
-                                .degree(Degree.valueOf(userTO.getDegree()))
+                                .sex(userTO.getSex())
+                                .degree(userTO.getDegree())
                                 .grade(userTO.getGrade())
                                 .educationalProgram(getEducationalProgram(userTO.getEducationalProgram()))
                                 .user(userService.createUser(
