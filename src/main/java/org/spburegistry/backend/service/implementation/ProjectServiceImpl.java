@@ -180,28 +180,53 @@ public class ProjectServiceImpl implements ProjectService {
         project.setStudents(getStudents(projectRoles));
     }
 
-    private void updateProjectLinks(Project project, Set<LinkTO> links) {
-        project.setLinks(links.stream()
-                .map(link -> getOrCreateLink(link, project))
-                .collect(Collectors.toSet()));
+    private void updateProjectLinks(Project project, Set<LinkTO> linksTO) {
+        Set<Link> linksWihtId = getLinksWithId(linksTO);
+        linkRepo.deleteAllInBatch(project.getLinks());
+        Set<Link> linkWithoutId = linksTO.stream()
+                .filter(linkTO -> linkTO.getLinkId() == null)
+                .map(linkTO -> createLink(linkTO, project))
+                .collect(Collectors.toSet());
+        linksWihtId.addAll(linkWithoutId);
+        project.setLinks(linksWihtId);
     }
 
-    private Link getOrCreateLink(LinkTO link, Project project) {
-        return Optional.ofNullable(link.getLinkId())
-                .flatMap(linkRepo::findById)
-                .orElse(createLink(link, project));
+    private Set<Link> getLinksWithId(Set<LinkTO> linksTO) {
+        return linksTO.stream()
+                .filter(linkTO -> linkTO.getLinkId() != null)
+                .map(linkTO -> {
+                    Optional<Link> link = linkRepo.findById(linkTO.getLinkId());
+                    link.ifPresent(theLink -> {
+                        theLink.setName(linkTO.getName());
+                        theLink.setLink(linkTO.getLink());
+                    });
+                    return link.get();
+                })
+                .collect(Collectors.toSet());
     }
 
-    private void updateProjectRoles(Project project, Set<RoleTO> projectRoles) {
-        project.setProjectRoles(projectRoles.stream()
-                .map(role -> getOrCreateProjectRole(role, project))
-                .collect(Collectors.toSet()));
+    private void updateProjectRoles(Project project, Set<RoleTO> projectRolesTO) {
+        Set<ProjectRole> rolesWithId = getProjectRolesWithId(projectRolesTO);
+        projectRoleRepo.deleteAllInBatch(project.getProjectRoles());
+        Set<ProjectRole> rolesWithoutId = projectRolesTO.stream()
+                .filter(roleTO -> roleTO.getRoleId() == null)
+                .map(roleTO -> createProjectRole(project, roleTO))
+                .collect(Collectors.toSet());
+        rolesWithId.addAll(rolesWithoutId);
+        project.setProjectRoles(rolesWithId);
     }
 
-    private ProjectRole getOrCreateProjectRole(RoleTO role, Project project) {
-        return Optional.ofNullable(role.getRoleId())
-                .flatMap(projectRoleRepo::findById)
-                .orElse(createProjectRole(project, role));
+    private Set<ProjectRole> getProjectRolesWithId(Set<RoleTO> rolesTO) {
+        return rolesTO.stream()
+                .filter(roleTO -> roleTO.getRoleId() != null)
+                .map(roleTO -> {
+                    Optional<ProjectRole> role = projectRoleRepo.findById(roleTO.getRoleId());
+                    role.ifPresent(theRole -> {
+                        theRole.setRole(roleTO.getRole());
+                    });
+                    return role.get();
+                })
+                .collect(Collectors.toSet());
     }
 
     private Set<Tag> getTags(Set<TagTO> tags) {
@@ -284,11 +309,11 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElse(new HashSet<>());
     }
 
-    private ProjectRole createProjectRole(Project project, RoleTO role) {
-        Student student = studentRepo.getReferenceById(role.getStudent().getStudentId());
+    private ProjectRole createProjectRole(Project project, RoleTO roleTO) {
+        Student student = studentRepo.getReferenceById(roleTO.getStudent().getStudentId());
         return ProjectRole.builder()
                 .project(project)
-                .role(role.getRole())
+                .role(roleTO.getRole())
                 .student(student)
                 .build();
     }
@@ -303,6 +328,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private Link createLink(LinkTO link, Project project) {
+        linkRepo.deleteAllInBatch(project.getLinks());
         return Link.builder()
                 .project(project)
                 .name(link.getName())
