@@ -182,7 +182,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     private void updateProjectLinks(Project project, Set<LinkTO> linksTO) {
         Set<Link> linksWihtId = getLinksWithId(linksTO);
-        linkRepo.deleteAllInBatch(project.getLinks());
+        Set<Link> linksThatDelete = project.getLinks().stream()
+                .filter(link -> !linksWihtId.contains(link))
+                .collect(Collectors.toSet());
+        linkRepo.deleteAllInBatch(linksThatDelete);
         Set<Link> linkWithoutId = linksTO.stream()
                 .filter(linkTO -> linkTO.getLinkId() == null)
                 .map(linkTO -> createLink(linkTO, project))
@@ -199,6 +202,7 @@ public class ProjectServiceImpl implements ProjectService {
                     link.ifPresent(theLink -> {
                         theLink.setName(linkTO.getName());
                         theLink.setLink(linkTO.getLink());
+                        linkRepo.save(theLink);
                     });
                     return link.get();
                 })
@@ -207,7 +211,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     private void updateProjectRoles(Project project, Set<RoleTO> projectRolesTO) {
         Set<ProjectRole> rolesWithId = getProjectRolesWithId(projectRolesTO);
-        projectRoleRepo.deleteAllInBatch(project.getProjectRoles());
+        Set<ProjectRole> rolesThatDelete = project.getProjectRoles().stream()
+                .filter(role -> !rolesWithId.contains(role))
+                .collect(Collectors.toSet());
+        projectRoleRepo.deleteAllInBatch(rolesThatDelete);
         Set<ProjectRole> rolesWithoutId = projectRolesTO.stream()
                 .filter(roleTO -> roleTO.getRoleId() == null)
                 .map(roleTO -> createProjectRole(project, roleTO))
@@ -223,6 +230,7 @@ public class ProjectServiceImpl implements ProjectService {
                     Optional<ProjectRole> role = projectRoleRepo.findById(roleTO.getRoleId());
                     role.ifPresent(theRole -> {
                         theRole.setRole(roleTO.getRole());
+                        projectRoleRepo.save(theRole);
                     });
                     return role.get();
                 })
@@ -311,11 +319,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     private ProjectRole createProjectRole(Project project, RoleTO roleTO) {
         Student student = studentRepo.getReferenceById(roleTO.getStudent().getStudentId());
-        return ProjectRole.builder()
+        return projectRoleRepo.save(ProjectRole.builder()
                 .project(project)
                 .role(roleTO.getRole())
                 .student(student)
-                .build();
+                .build());
     }
 
     private Set<Link> saveLinksInProject(Set<LinkTO> linksTO, Project project) {
@@ -328,12 +336,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private Link createLink(LinkTO link, Project project) {
-        linkRepo.deleteAllInBatch(project.getLinks());
-        return Link.builder()
+        return linkRepo.save(Link.builder()
                 .project(project)
                 .name(link.getName())
                 .link(link.getLink())
-                .build();
+                .build());
     }
 
     @Override
