@@ -73,7 +73,7 @@ public class Project extends BaseEntity {
 
     @EqualsAndHashCode.Exclude
     @Builder.Default
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(name = "project_student", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
     private Set<Student> students = new HashSet<>();
 
@@ -106,7 +106,13 @@ public class Project extends BaseEntity {
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "project_project", joinColumns = @JoinColumn(name = "first_project_id"), inverseJoinColumns = @JoinColumn(name = "second_project_id"))
     private Set<Project> linkedProjects = new HashSet<>();
-
+    
+    @EqualsAndHashCode.Exclude
+    @Builder.Default
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "project_project", joinColumns = @JoinColumn(name = "second_project_id"), inverseJoinColumns = @JoinColumn(name = "first_project_id"))
+    private Set<Project> projectsThatLinksThis = new HashSet<>();
+    
     @EqualsAndHashCode.Exclude
     @Builder.Default
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -141,7 +147,9 @@ public class Project extends BaseEntity {
         this.students.clear();
         this.supervisors.clear();
         this.tags.clear();
+        this.projectsThatLinksThis.forEach(projectsThatLinksThis -> projectsThatLinksThis.getLinkedProjects().remove(this));
         this.linkedProjects.forEach(linkedProject -> linkedProject.getLinkedProjects().remove(this));
+        this.linkedProjects.clear();
         this.projectRoles.forEach(projectRole -> projectRole.setProject(null));
         this.links.forEach(link -> link.setProject(null));
         this.commits.forEach(commit -> commit.setProject(null));

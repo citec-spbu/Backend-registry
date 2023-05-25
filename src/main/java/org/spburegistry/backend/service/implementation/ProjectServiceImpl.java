@@ -105,7 +105,8 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepo.save(newProject);
         project.setLinks(saveLinksInProject(projectRequest.getLinks(), project));
         project.setProjectRoles(saveRolesInProject(projectRequest.getProjectRoles(), project));
-        return ConvertToTO.projectToTO(projectRepo.save(project));
+        project = projectRepo.save(project);
+        return ConvertToTO.projectToTO(project);
     }
 
     @Override
@@ -218,6 +219,7 @@ public class ProjectServiceImpl implements ProjectService {
         Set<ProjectRole> rolesWithoutId = projectRolesTO.stream()
                 .filter(roleTO -> roleTO.getRoleId() == null)
                 .map(roleTO -> createProjectRole(project, roleTO))
+                .map(projectRoleRepo::save)
                 .collect(Collectors.toSet());
         rolesWithId.addAll(rolesWithoutId);
         project.setProjectRoles(rolesWithId);
@@ -319,12 +321,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private ProjectRole createProjectRole(Project project, RoleTO roleTO) {
-        Student student = studentRepo.getReferenceById(roleTO.getStudent().getStudentId());
-        return projectRoleRepo.save(ProjectRole.builder()
+        Student student = studentRepo.findById(roleTO.getStudent().getStudentId())
+            .orElseThrow(() -> new EntityNotFoundException("Student with id " + roleTO.getStudent().getStudentId() + " not found"));
+       return ProjectRole.builder()
                 .project(project)
                 .role(roleTO.getRole())
                 .student(student)
-                .build());
+                .build();
     }
 
     private Set<Link> saveLinksInProject(Set<LinkTO> linksTO, Project project) {
