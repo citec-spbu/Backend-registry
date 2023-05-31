@@ -6,5 +6,6 @@ public enum Status {
     ACTIVE,
     DEFENSE,
     TEST,
-    COMPLETE
+    COMPLETE,
+    empty
 }

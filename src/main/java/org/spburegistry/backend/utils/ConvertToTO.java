@@ -82,7 +82,7 @@ public class ConvertToTO {
     public static UserTO userToTO(User user) {
         return UserTO.builder()
                 .userId(user.getId())
-                .role(user.getRole().name())
+                .role(user.getRole())
                 .student((user.getStudent() == null) ? null
                         : ConvertToTO.studentToTO(user.getStudent()))
                 .client((user.getClient() == null) ? null : ConvertToTO.clientToTO(user.getClient()))
@@ -124,8 +124,8 @@ public class ConvertToTO {
                 .studentId(student.getId())
                 .name(student.getUser().getName())
                 .email(student.getUser().getEmail())
-                .degree(student.getDegree().name())
-                .sex(student.getSex().name())
+                .degree(student.getDegree())
+                .sex(student.getSex())
                 .grade(student.getGrade())
                 .educationalProgram(educationalProgramToTO(student.getEducationalProgram()))
                 .build();
@@ -147,13 +147,6 @@ public class ConvertToTO {
                 .link(link.getLink())
                 .projectId(link.getProject().getId())
                 .build();
-    }
-
-    private static RoleTO getRoleFromStudent(Student student, Long projectId) {
-        return student.getRoles().stream()
-                        .filter(role -> role.getProject().getId() == projectId)
-                        .map(ConvertToTO::roleToTO)
-                        .findFirst().get();
     }
 
     public static ProjectTO projectToTO(Project project) {
@@ -182,8 +175,8 @@ public class ConvertToTO {
                 .map(ConvertToTO::tagToTO)
                 .collect(Collectors.toSet());
 
-        Set<RoleTO> projectRoles = project.getStudents().stream()
-                .map(student -> getRoleFromStudent(student, project.getId()))
+        Set<RoleTO> projectRoles = project.getProjectRoles().stream()
+                .map(ConvertToTO::roleToTO)
                 .collect(Collectors.toSet());
 
         Set<Long> linkedProjectsIds = project.getLinkedProjects().stream()

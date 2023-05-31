@@ -3,6 +3,8 @@ package org.spburegistry.backend.service.implementation;
 import jakarta.persistence.EntityNotFoundException;
 import org.spburegistry.backend.dto.*;
 import org.spburegistry.backend.entity.*;
+import org.spburegistry.backend.enums.Status;
+import org.spburegistry.backend.enums.WorkFormat;
 import org.spburegistry.backend.repository.*;
 import org.spburegistry.backend.service.ProjectService;
 import org.spburegistry.backend.utils.ConvertToTO;
@@ -66,6 +68,16 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public ProjectTO addEmptyProject() {
+        return ConvertToTO.projectToTO(projectRepo.save(Project.builder()
+                .description("")
+                .name("")
+                .workFormat(WorkFormat.empty)
+                .status(Status.empty)
+                .build()));
+    }
+
+    @Override
     public ProjectTO addProject(ProjectRequestTO projectRequest) {
         Project newProject = Project.builder()
                 .name(projectRequest.getName())
@@ -93,7 +105,8 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepo.save(newProject);
         project.setLinks(saveLinksInProject(projectRequest.getLinks(), project));
         project.setProjectRoles(saveRolesInProject(projectRequest.getProjectRoles(), project));
-        return ConvertToTO.projectToTO(projectRepo.save(project));
+        project = projectRepo.save(project);
+        return ConvertToTO.projectToTO(project);
     }
 
     @Override
@@ -110,8 +123,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectTO updateProject(ProjectRequestTO projectRequestTO) {
         Project project = projectRepo.findById(projectRequestTO.getProjectId()).orElseThrow(
-                () -> new EntityNotFoundException("Project with id " + projectRequestTO.getProjectId() + " not found")
-        );
+                () -> new EntityNotFoundException("Project with id " + projectRequestTO.getProjectId() + " not found"));
 
         project.compareAndSetName(projectRequestTO.getName());
         project.compareAndSetDescription(projectRequestTO.getDescription());
@@ -141,7 +153,6 @@ public class ProjectServiceImpl implements ProjectService {
         return ConvertToTO.projectToTO(projectRepo.save(project));
     }
 
-
     private void updateLinkingProjectIds(Project project, Set<Long> linkedProjectsIds) {
         project.setLinkedProjects(getLinkedProjects(linkedProjectsIds));
     }
@@ -170,28 +181,63 @@ public class ProjectServiceImpl implements ProjectService {
         project.setStudents(getStudents(projectRoles));
     }
 
-    private void updateProjectLinks(Project project, Set<LinkTO> links) {
-        project.setLinks(links.stream()
-                .map(link -> getOrCreateLink(link, project))
-                .collect(Collectors.toSet()));
+    private void updateProjectLinks(Project project, Set<LinkTO> linksTO) {
+        Set<Link> linksWihtId = getLinksWithId(linksTO);
+        Set<Link> linksThatDelete = project.getLinks().stream()
+                .filter(link -> !linksWihtId.contains(link))
+                .collect(Collectors.toSet());
+        linkRepo.deleteAllInBatch(linksThatDelete);
+        Set<Link> linkWithoutId = linksTO.stream()
+                .filter(linkTO -> linkTO.getLinkId() == null)
+                .map(linkTO -> createLink(linkTO, project))
+                .collect(Collectors.toSet());
+        linksWihtId.addAll(linkWithoutId);
+        project.setLinks(linksWihtId);
     }
 
-    private Link getOrCreateLink(LinkTO link, Project project) {
-        return Optional.ofNullable(link.getLinkId())
-                .flatMap(linkRepo::findById)
-                .orElse(createLink(link, project));
+    private Set<Link> getLinksWithId(Set<LinkTO> linksTO) {
+        return linksTO.stream()
+                .filter(linkTO -> linkTO.getLinkId() != null)
+                .map(linkTO -> {
+                    Optional<Link> link = linkRepo.findById(linkTO.getLinkId());
+                    link.ifPresent(theLink -> {
+                        theLink.setName(linkTO.getName());
+                        theLink.setLink(linkTO.getLink());
+                        linkRepo.save(theLink);
+                    });
+                    return link.get();
+                })
+                .collect(Collectors.toSet());
     }
 
-    private void updateProjectRoles(Project project, Set<RoleTO> projectRoles) {
-        project.setProjectRoles(projectRoles.stream()
-                .map(role -> getOrCreateProjectRole(role, project))
-                .collect(Collectors.toSet()));
+    private void updateProjectRoles(Project project, Set<RoleTO> projectRolesTO) {
+        Set<ProjectRole> rolesWithId = getProjectRolesWithId(projectRolesTO);
+        Set<ProjectRole> rolesThatDelete = project.getProjectRoles().stream()
+                .filter(role -> !rolesWithId.contains(role))
+                .collect(Collectors.toSet());
+        projectRoleRepo.deleteAllInBatch(rolesThatDelete);
+        Set<ProjectRole> rolesWithoutId = projectRolesTO.stream()
+                .filter(roleTO -> roleTO.getRoleId() == null)
+                .map(roleTO -> createProjectRole(project, roleTO))
+                .map(projectRoleRepo::save)
+                .collect(Collectors.toSet());
+        rolesWithId.addAll(rolesWithoutId);
+        project.setProjectRoles(rolesWithId);
     }
 
-    private ProjectRole getOrCreateProjectRole(RoleTO role, Project project) {
-        return Optional.ofNullable(role.getRoleId())
-                .flatMap(projectRoleRepo::findById)
-                .orElse(createProjectRole(project, role));
+    private Set<ProjectRole> getProjectRolesWithId(Set<RoleTO> rolesTO) {
+        return rolesTO.stream()
+                .filter(roleTO -> roleTO.getRoleId() != null)
+                .map(roleTO -> {
+                    Optional<ProjectRole> role = projectRoleRepo.findById(roleTO.getRoleId());
+                    role.ifPresent(theRole -> {
+                        theRole.setStudent(studentRepo.getReferenceById(roleTO.getStudent().getStudentId()));
+                        theRole.setRole(roleTO.getRole());
+                        projectRoleRepo.save(theRole);
+                    });
+                    return role.get();
+                })
+                .collect(Collectors.toSet());
     }
 
     private Set<Tag> getTags(Set<TagTO> tags) {
@@ -274,11 +320,12 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElse(new HashSet<>());
     }
 
-    private ProjectRole createProjectRole(Project project, RoleTO role) {
-        Student student = studentRepo.getReferenceById(role.getStudent().getStudentId());
-        return ProjectRole.builder()
+    private ProjectRole createProjectRole(Project project, RoleTO roleTO) {
+        Student student = studentRepo.findById(roleTO.getStudent().getStudentId())
+            .orElseThrow(() -> new EntityNotFoundException("Student with id " + roleTO.getStudent().getStudentId() + " not found"));
+       return ProjectRole.builder()
                 .project(project)
-                .role(role.getRole())
+                .role(roleTO.getRole())
                 .student(student)
                 .build();
     }
@@ -293,11 +340,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private Link createLink(LinkTO link, Project project) {
-        return Link.builder()
+        return linkRepo.save(Link.builder()
                 .project(project)
                 .name(link.getName())
                 .link(link.getLink())
-                .build();
+                .build());
     }
 
+    @Override
+    public void deleteProject(Long id) {
+        Project project = projectRepo.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Project with id " + id + " not found"));
+        projectRepo.delete(project);
+    }
 }
