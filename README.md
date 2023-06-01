@@ -8,9 +8,10 @@ Backend for Register of Clinical Practice projects of St. Petersburg State Unive
   docker-compose up
   ```
   
-## ??
+## Dev notes
 1. Download [Java17](https://www.oracle.com/cis/java/technologies/downloads/) and [Maven](https://maven.apache.org/download.cgi)
-2. In resources -> application properties ..
+2. In resources -> application properties you can find credentials to raise the database. 
+
 
 ## Database 
 
