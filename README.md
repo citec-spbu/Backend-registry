@@ -1,5 +1,5 @@
 # Backend-registry
-Backend for Register of Clinical Practice projects of St. Petersburg State University
+Backend for Register of Clinical Practice projects of St. Petersburg State University.
 
 ## Launch
 1. Download [Docker](https://docs.docker.com/engine/install/)
@@ -14,6 +14,7 @@ Backend for Register of Clinical Practice projects of St. Petersburg State Unive
 
 
 ## Database 
+Information and description about database is located and in *DataBase* folder.
 
 ## Software testing
 
